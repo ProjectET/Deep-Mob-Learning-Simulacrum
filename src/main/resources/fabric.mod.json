@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "dmlSimulacrum",
+  "version": "${version}",
+  "name": "Deep Mob Learning: Simulacrum",
+  "description": "An addon mod that ports the simulation chamber to DML:R",
+  "authors": [
+    "ProjectET"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/io.github.projectet.dmlSimulacrum/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.projectet.dmlSimulacrum.dmlSimulacrumClient"
+    ],
+    "main": [
+      "io.github.projectet.dmlSimulacrum.dmlSimulacrum"
+    ]
+  },
+  "mixins": [
+    "dmlSimulacrum.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.16.5",
+    "": ""
+  }
+}
