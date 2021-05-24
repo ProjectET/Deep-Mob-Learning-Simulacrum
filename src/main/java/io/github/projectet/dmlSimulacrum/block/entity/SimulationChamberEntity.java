@@ -1,9 +1,9 @@
 package io.github.projectet.dmlSimulacrum.block.entity;
 
-import dev.nathanpb.dml.DataModel;
 import dev.technici4n.fasttransferlib.api.Simulation;
 import dev.technici4n.fasttransferlib.api.energy.EnergyIo;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
+import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BlockEntity;
@@ -35,7 +35,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
 
     @Override
     public double getEnergyCapacity() {
-        return 2000000;
+        return 2000000.0;
     }
 
     @Override
@@ -45,8 +45,19 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
 
     @Override
     public double insert(double amount, Simulation simulation) {
-
-        return EnergyIo.super.insert(amount, simulation);
+        double inserted = energyAmount + amount;
+        if(inserted > getEnergyCapacity()) {
+            if (!simulation.isSimulating()) {
+                energyAmount = getEnergyCapacity();
+            }
+            return inserted - getEnergyCapacity();
+        }
+        else {
+            if (!simulation.isSimulating()) {
+                energyAmount += amount;
+            }
+            return 0.0;
+        }
     }
 
     @Override
@@ -76,19 +87,19 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         return tag;
     }
 
-    /*private void updateSimulationText(ItemStack stack) {
+    private void updateSimulationText(ItemStack stack) {
         String[] lines = new String[]{
                 "> Launching runtime",
                 "v1.4.7",
-                "> Iteration #" + (DataModel.getTotalSimulationCount(stack) + 1) + " started",
+                "> Iteration #" + (DataModelUtil.getSimulationCount(stack) + 1) + " started",
                 "> Loading model from chip memory",
                 "> Assessing threat level",
                 "> Engaged enemy",
                 "> Pristine procurement",
-                byproductSuccess ? "succeeded" : "failed",
+                //byproductSuccess ? "succeeded" : "failed",
                 "> Processing results",
                 "..."
         };
 
-    }*/
+    }
 }
