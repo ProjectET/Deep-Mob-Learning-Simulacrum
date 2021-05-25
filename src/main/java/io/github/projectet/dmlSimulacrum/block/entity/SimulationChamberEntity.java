@@ -3,6 +3,7 @@ package io.github.projectet.dmlSimulacrum.block.entity;
 import dev.technici4n.fasttransferlib.api.Simulation;
 import dev.technici4n.fasttransferlib.api.energy.EnergyIo;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
+import io.github.projectet.dmlSimulacrum.util.Animation;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InventoryProvider;
@@ -15,10 +16,16 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 
+import java.util.HashMap;
+
 public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, InventoryProvider {
 
     private Double energyAmount = 0.0;
+    private boolean isCrafting = false;
+    private boolean byproductSuccess = false;
 
+    private HashMap<String, String> simulationText = new HashMap<>();
+    private HashMap<String, Animation> simulationAnimation = new HashMap<>();
     public SimulationChamberEntity(BlockEntityType<?> type) {
         super(type);
     }
@@ -78,12 +85,16 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     public void fromTag(BlockState state, CompoundTag tag) {
         super.fromTag(state, tag);
         energyAmount = tag.getDouble("energy");
+        byproductSuccess = tag.getBoolean("byproductSuccess");
+        isCrafting = tag.getBoolean("isCrafting");
     }
 
     @Override
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
         tag.putDouble("energy", energyAmount);
+        tag.putBoolean("byproductSuccess", byproductSuccess);
+        tag.putBoolean("isCrafting", isCrafting);
         return tag;
     }
 
@@ -96,7 +107,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
                 "> Assessing threat level",
                 "> Engaged enemy",
                 "> Pristine procurement",
-                //byproductSuccess ? "succeeded" : "failed",
+                byproductSuccess ? "succeeded" : "failed",
                 "> Processing results",
                 "..."
         };
