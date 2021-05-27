@@ -27,8 +27,8 @@ public class dmlSimulacrum implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Registry.register(Registry.BLOCK, id("test_block"), SIMULATION_CHAMBER);
-        Registry.register(Registry.ITEM, id("test_block"), new BlockItem(SIMULATION_CHAMBER, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
+        Registry.register(Registry.BLOCK, id("simulation_chamber"), SIMULATION_CHAMBER);
+        Registry.register(Registry.ITEM, id("simulation_chamber"), new BlockItem(SIMULATION_CHAMBER, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
         SIMULATION_CHAMBER_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, id("simulation_chamber_entity"), BlockEntityType.Builder.create(SimulationChamberEntity::new, SIMULATION_CHAMBER).build(null));
         EnergyApi.SIDED.registerSelf(SIMULATION_CHAMBER_ENTITY);
     }

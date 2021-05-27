@@ -23,7 +23,6 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     private boolean isCrafting = false;
     private boolean byproductSuccess = false;
     private int ticks = 0;
-    private EnergyIo ter = this;
 
     private HashMap<String, String> simulationText = new HashMap<>();
     private HashMap<String, Animation> simulationAnimation = new HashMap<>();
