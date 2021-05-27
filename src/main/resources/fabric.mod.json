@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "dmlSimulacrum",
+  "id": "dmlsimulacrum",
   "version": "${version}",
   "name": "Deep Mob Learning: Simulacrum",
   "description": "An addon mod that ports the simulation chamber to DML:R",
@@ -25,7 +25,6 @@
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "minecraft": "1.16.5",
-    "": ""
+    "minecraft": "1.16.5"
   }
 }

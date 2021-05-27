@@ -15,7 +15,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
-
 import java.util.HashMap;
 
 public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, InventoryProvider {
@@ -23,9 +22,12 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
     private boolean byproductSuccess = false;
+    private int ticks = 0;
+    private EnergyIo ter = this;
 
     private HashMap<String, String> simulationText = new HashMap<>();
     private HashMap<String, Animation> simulationAnimation = new HashMap<>();
+
     public SimulationChamberEntity(BlockEntityType<?> type) {
         super(type);
     }
@@ -74,6 +76,9 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
 
     @Override
     public void tick() {
+        if(!world.isClient) {
+            ticks++;
+        }
     }
 
     @Override
