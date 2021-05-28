@@ -2,6 +2,7 @@ package io.github.projectet.dmlSimulacrum.block.entity;
 
 import dev.technici4n.fasttransferlib.api.Simulation;
 import dev.technici4n.fasttransferlib.api.energy.EnergyIo;
+import io.github.cottonmc.cotton.gui.PropertyDelegateHolder;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import io.github.projectet.dmlSimulacrum.util.Animation;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
@@ -9,15 +10,23 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, InventoryProvider {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, InventoryProvider, NamedScreenHandlerFactory, PropertyDelegateHolder {
 
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
@@ -116,5 +125,21 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
                 "..."
         };
 
+    }
+
+    @Override
+    public Text getDisplayName() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+        return null;
+    }
+
+    @Override
+    public PropertyDelegate getPropertyDelegate() {
+        return null;
     }
 }

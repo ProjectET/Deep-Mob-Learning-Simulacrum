@@ -24,16 +24,13 @@ dependencies {
     include("alexiil.mc.lib:libblockattributes-items:0.8.5")
 
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${project.pal_version}"
-    include "io.github.ladysnake:PlayerAbilityLib:${project.pal_version}"
 
     modApi ("dev.technici4n:FastTransferLib:${project.ftl_version}")
     include ("dev.technici4n:FastTransferLib:${project.ftl_version}")
 
     modApi 'com.github.NathanPB:KtDataTagLib:1.4.0'
-    include 'com.github.NathanPB:KtDataTagLib:1.4.0'
 
     modImplementation "io.github.cottonmc:LibGui:${project.libgui_version}"
-    include "io.github.cottonmc:LibGui:${project.libgui_version}"
 
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude group: "net.fabricmc.fabric-api", module: "fabric-api"
@@ -42,7 +39,6 @@ dependencies {
     modImplementation("me.shedaniel:RoughlyEnoughItems:${project.rei_version}")
 
     modApi "com.github.NathanPB:Safer:${project.safer_version}"
-    include "com.github.NathanPB:Safer:${project.safer_version}"
 
     modApi('com.github.NathanPB:DeepMobLearning-Refabricated:997e7860f7')
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.

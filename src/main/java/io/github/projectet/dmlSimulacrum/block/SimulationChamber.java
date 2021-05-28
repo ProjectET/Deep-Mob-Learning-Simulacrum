@@ -8,6 +8,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.LiteralText;
@@ -46,10 +47,16 @@ public class SimulationChamber extends HorizontalFacingBlock implements BlockEnt
         return state.with(FACING, ctx.getPlayerFacing().getOpposite());
     }
 
+    @Nullable
+    @Override
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+        return super.createScreenHandlerFactory(state, world, pos);
+    }
+
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        super.onUse(state, world, pos, player, hand, hit);
         player.sendMessage(new LiteralText(String.valueOf(((SimulationChamberEntity) world.getBlockEntity(pos)).getEnergy())), true);
+        player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
         return ActionResult.SUCCESS;
     }
 }
