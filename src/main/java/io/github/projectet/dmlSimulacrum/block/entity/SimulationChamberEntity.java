@@ -2,8 +2,8 @@ package io.github.projectet.dmlSimulacrum.block.entity;
 
 import dev.technici4n.fasttransferlib.api.Simulation;
 import dev.technici4n.fasttransferlib.api.energy.EnergyIo;
-import io.github.cottonmc.cotton.gui.PropertyDelegateHolder;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
+import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreenHandler;
 import io.github.projectet.dmlSimulacrum.util.Animation;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
 import net.minecraft.block.BlockState;
@@ -12,26 +12,30 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, InventoryProvider, NamedScreenHandlerFactory, PropertyDelegateHolder {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, InventoryProvider, NamedScreenHandlerFactory {
 
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
     private boolean byproductSuccess = false;
-    private int ticks = 0;
+    public int ticks = 0;
+    public int percentDone = 0;
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
 
     private HashMap<String, String> simulationText = new HashMap<>();
     private HashMap<String, Animation> simulationAnimation = new HashMap<>();
@@ -127,19 +131,67 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
 
     }
 
+/*    private void startSimulation() {
+        isCrafting = true;
+        currentDataModelType = DataModel.getMobMetaData(getDataModel()).getKey();
+        mobMetaData = MobMetaFactory.createMobMetaData(currentDataModelType);
+        ItemStack oldInput = getPolymerClay();
+        ItemStack newInput = new ItemStack(Registry.polymerClay, oldInput.getCount() - 1);
+        polymer.setStackInSlot(0, newInput);
+        resetAnimations();
+    }
+
+    private void finishSimulation(boolean abort) {
+        resetAnimations();
+        percentDone = 0;
+        isCrafting = false;
+        // Only decrease input and increase output if not aborted, and only if on the server's TE
+        if(!abort && !world.isRemote) {
+            DataModel.increaseSimulationCount(getDataModel());
+
+            ItemStack oldOutput = getLiving();
+            ItemStack newOutput = mobMetaData.getLivingMatterStack(oldOutput.getCount() + 1);
+            lOutput.setStackInSlot(0, newOutput);
+
+            if(byproductSuccess) {
+                // If Byproduct roll was successful
+                byproductSuccess = false;
+                ItemStack oldPristine = getPristine();
+                ItemStack newPristine = mobMetaData.getPristineMatterStack(oldPristine.getCount() + 1);
+
+                pOutput.setStackInSlot(0, newPristine);
+            }
+
+            updateState();
+        }
+    }
+
+    private boolean canStartSimulation() {
+        return hasEnergyForSimulation() && canContinueSimulation() && !outputIsFull() && !pristineIsFull() && hasPolymerClay();
+    }
+
+    private boolean canContinueSimulation() {
+        return hasDataModel() && DataModel.getTier(getDataModel()) != 0;
+    }
+
+    public boolean hasEnergyForSimulation() {
+        if(hasDataModel()) {
+            int ticksPerSimulation = 300;
+            return getEnergy() > (ticksPerSimulation * DataModel.getSimulationTickCost(getDataModel()));
+        } else {
+            return false;
+        }
+    }*/
+
     @Override
     public Text getDisplayName() {
-        return null;
+        return new LiteralText("Simulation Chamber");
     }
 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return null;
+        return new SimulationChamberScreenHandler(syncId, inv);
     }
 
-    @Override
-    public PropertyDelegate getPropertyDelegate() {
-        return null;
-    }
 }

@@ -10,4 +10,7 @@ public class Items {
     }
 
     public static final Item POLYMER_CLAY = new Item(new FabricItemSettings().maxCount(64));
+    public static final Item OVERWORLD_MATTER = new Item(new FabricItemSettings().maxCount(64));
+    public static final Item HELLISH_MATTER = new Item(new FabricItemSettings().maxCount(64));
+    public static final Item EXTRATERRESTRIAL_MATTER = new Item(new FabricItemSettings().maxCount(64));
 }
