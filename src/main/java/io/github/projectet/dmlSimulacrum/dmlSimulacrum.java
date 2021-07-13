@@ -28,11 +28,7 @@ public class dmlSimulacrum implements ModInitializer {
         return new Identifier(MOD_ID, path);
     }
 
-    public static final ScreenHandlerType<SimulationChamberScreenHandler> SCS_HANDLER_TYPE;
 
-    static {
-        SCS_HANDLER_TYPE = ScreenHandlerRegistry.registerSimple(id("simulation"), SimulationChamberScreenHandler::new);
-    }
 
     @Override
     public void onInitialize() {

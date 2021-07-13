@@ -23,12 +23,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, InventoryProvider, NamedScreenHandlerFactory {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, SidedInventory, NamedScreenHandlerFactory {
 
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
@@ -91,11 +92,6 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         if(!world.isClient) {
             ticks++;
         }
-    }
-
-    @Override
-    public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
-        return null;
     }
 
     @Override
@@ -191,7 +187,61 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new SimulationChamberScreenHandler(syncId, inv);
+        return new SimulationChamberScreenHandler(syncId, inv, this);
     }
 
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        return new int[3];
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        return false;
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return 3;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public ItemStack getStack(int slot) {
+        return null;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot, int amount) {
+        return null;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot) {
+        return null;
+    }
+
+    @Override
+    public void setStack(int slot, ItemStack stack) {
+
+    }
+
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return true;
+    }
+
+    @Override
+    public void clear() {
+
+    }
 }

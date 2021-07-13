@@ -1,6 +1,7 @@
 package io.github.projectet.dmlSimulacrum;
 
 import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreen;
+import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreenHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,6 +12,6 @@ public class dmlSimulacrumClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ScreenRegistry.register(dmlSimulacrum.SCS_HANDLER_TYPE, SimulationChamberScreen::new);
+        ScreenRegistry.register(SimulationChamberScreenHandler.SCS_HANDLER_TYPE, SimulationChamberScreen::new);
     }
 }

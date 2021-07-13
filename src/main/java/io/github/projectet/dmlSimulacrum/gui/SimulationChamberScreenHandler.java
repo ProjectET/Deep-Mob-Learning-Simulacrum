@@ -1,21 +1,25 @@
 package io.github.projectet.dmlSimulacrum.gui;
 
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 
 public class SimulationChamberScreenHandler extends ScreenHandler {
+
+    public static final ScreenHandlerType<SimulationChamberScreenHandler> SCS_HANDLER_TYPE = ScreenHandlerRegistry.registerSimple(dmlSimulacrum.id("simulation"), SimulationChamberScreenHandler::new);
 
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, new SimpleInventory(3));
     }
 
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-        super(dmlSimulacrum.SCS_HANDLER_TYPE, syncId);
+        super(SCS_HANDLER_TYPE, syncId);
         checkSize(inventory, 3);
 
         this.addSlot(new Slot(inventory, 0, 80, 35));
