@@ -1,5 +1,6 @@
 package io.github.projectet.dmlSimulacrum.gui;
 
+import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -13,7 +14,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
 
     private static final int WIDTH =  232;
     private static final int HEIGHT = 230;
-    public static final Identifier GUI = new Identifier("dmlSimulacrum", "textures/gui/simulation_chamber_base.png");
+    public static final Identifier GUI = dmlSimulacrum.id( "textures/gui/simulation_chamber_base.png");
 
     public SimulationChamberScreen(SimulationChamberScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);

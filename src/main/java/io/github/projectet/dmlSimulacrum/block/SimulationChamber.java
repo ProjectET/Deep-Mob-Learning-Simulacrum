@@ -47,12 +47,6 @@ public class SimulationChamber extends HorizontalFacingBlock implements BlockEnt
         return state.with(FACING, ctx.getPlayerFacing().getOpposite());
     }
 
-    @Nullable
-    @Override
-    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return super.createScreenHandlerFactory(state, world, pos);
-    }
-
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         player.sendMessage(new LiteralText(String.valueOf(((SimulationChamberEntity) world.getBlockEntity(pos)).getEnergy())), true);
@@ -63,5 +57,11 @@ public class SimulationChamber extends HorizontalFacingBlock implements BlockEnt
             }
         }
         return ActionResult.SUCCESS;
+    }
+
+    @Nullable
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        return blockEntity instanceof NamedScreenHandlerFactory ? (NamedScreenHandlerFactory) blockEntity : null;
     }
 }

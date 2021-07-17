@@ -4,16 +4,14 @@ import dev.technici4n.fasttransferlib.api.Simulation;
 import dev.technici4n.fasttransferlib.api.energy.EnergyIo;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreenHandler;
+import io.github.projectet.dmlSimulacrum.inventory.ImplementedInventory;
 import io.github.projectet.dmlSimulacrum.util.Animation;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -22,21 +20,18 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, SidedInventory, NamedScreenHandlerFactory {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, NamedScreenHandlerFactory {
 
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
     private boolean byproductSuccess = false;
     public int ticks = 0;
     public int percentDone = 0;
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
 
     private HashMap<String, String> simulationText = new HashMap<>();
     private HashMap<String, Animation> simulationAnimation = new HashMap<>();
@@ -181,7 +176,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
 
     @Override
     public Text getDisplayName() {
-        return new LiteralText("Simulation Chamber");
+        return new LiteralText("");
     }
 
     @Nullable
@@ -191,57 +186,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     }
 
     @Override
-    public int[] getAvailableSlots(Direction side) {
-        return new int[3];
-    }
-
-    @Override
-    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-        return false;
-    }
-
-    @Override
-    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return false;
-    }
-
-    @Override
-    public int size() {
-        return 3;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public ItemStack getStack(int slot) {
-        return null;
-    }
-
-    @Override
-    public ItemStack removeStack(int slot, int amount) {
-        return null;
-    }
-
-    @Override
-    public ItemStack removeStack(int slot) {
-        return null;
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-
-    }
-
-    @Override
-    public boolean canPlayerUse(PlayerEntity player) {
-        return true;
-    }
-
-    @Override
-    public void clear() {
-
+    public DefaultedList<ItemStack> getItems() {
+        return inventory;
     }
 }
