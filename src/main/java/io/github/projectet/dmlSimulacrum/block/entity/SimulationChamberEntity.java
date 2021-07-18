@@ -7,6 +7,7 @@ import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreenHandler;
 import io.github.projectet.dmlSimulacrum.inventory.ImplementedInventory;
 import io.github.projectet.dmlSimulacrum.util.Animation;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -14,8 +15,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
@@ -24,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, NamedScreenHandlerFactory {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory {
 
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
@@ -188,5 +190,10 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     @Override
     public DefaultedList<ItemStack> getItems() {
         return inventory;
+    }
+
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeBlockPos(this.getPos());
     }
 }

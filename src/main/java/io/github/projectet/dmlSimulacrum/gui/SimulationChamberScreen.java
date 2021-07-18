@@ -1,5 +1,6 @@
 package io.github.projectet.dmlSimulacrum.gui;
 
+import io.github.projectet.dmlSimulacrum.block.entity.SimulationChamberEntity;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,9 +16,12 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
     private static final int WIDTH =  232;
     private static final int HEIGHT = 230;
     public static final Identifier GUI = dmlSimulacrum.id( "textures/gui/simulation_chamber_base.png");
+    public static final Identifier defaultGUI = dmlSimulacrum.id("textures/gui/default_gui.png");
+    private final SimulationChamberEntity blockEntity;
 
     public SimulationChamberScreen(SimulationChamberScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        blockEntity = handler.getBlockEntity();
     }
     
     @Override
