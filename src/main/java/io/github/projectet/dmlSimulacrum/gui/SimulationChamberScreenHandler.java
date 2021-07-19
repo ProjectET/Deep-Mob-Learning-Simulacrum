@@ -22,6 +22,7 @@ public class SimulationChamberScreenHandler extends ScreenHandler {
     public static final int PRISTINE_SLOT = 3;
     private Inventory inventory;
     private PlayerEntity player;
+    private Double energy;
     private SimulationChamberEntity blockEntity;
     private BlockPos blockPos;
 
@@ -30,7 +31,8 @@ public class SimulationChamberScreenHandler extends ScreenHandler {
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf packetByteBuf) {
         this(syncId, playerInventory, new SimpleInventory(4));
         this.blockPos = packetByteBuf.readBlockPos();
-        this.blockEntity = ((SimulationChamberEntity) playerInventory.player.world.getBlockEntity(blockPos));
+        this.blockEntity = ((SimulationChamberEntity) playerInventory.player.getEntityWorld().getBlockEntity(blockPos));
+        this.energy = packetByteBuf.readDouble();
     }
 
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
@@ -76,6 +78,10 @@ public class SimulationChamberScreenHandler extends ScreenHandler {
 
     public SimulationChamberEntity getBlockEntity() {
         return blockEntity;
+    }
+
+    public Double getEnergy() {
+        return energy;
     }
 
     @Override

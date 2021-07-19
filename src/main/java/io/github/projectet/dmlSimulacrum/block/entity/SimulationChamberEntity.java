@@ -13,6 +13,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
@@ -97,6 +98,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         energyAmount = tag.getDouble("energy");
         byproductSuccess = tag.getBoolean("byproductSuccess");
         isCrafting = tag.getBoolean("isCrafting");
+        Inventories.fromTag(tag, inventory);
     }
 
     @Override
@@ -105,6 +107,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         tag.putDouble("energy", energyAmount);
         tag.putBoolean("byproductSuccess", byproductSuccess);
         tag.putBoolean("isCrafting", isCrafting);
+        Inventories.toTag(tag, inventory);
         return tag;
     }
 
@@ -195,5 +198,6 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         buf.writeBlockPos(this.getPos());
+        buf.writeDouble(getEnergy());
     }
 }
