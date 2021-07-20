@@ -30,7 +30,7 @@ dependencies {
 
     modApi 'com.github.NathanPB:KtDataTagLib:1.4.0'
 
-    modImplementation "io.github.cottonmc:LibGui:${project.libgui_version}"
+    modApi "io.github.cottonmc:LibGui:${project.libgui_version}"
 
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude group: "net.fabricmc.fabric-api", module: "fabric-api"

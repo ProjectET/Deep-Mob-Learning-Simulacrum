@@ -3,7 +3,9 @@ package io.github.projectet.dmlSimulacrum.gui;
 import io.github.projectet.dmlSimulacrum.block.entity.SimulationChamberEntity;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import io.github.projectet.dmlSimulacrum.inventory.SlotSimulationChamber;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -13,7 +15,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class SimulationChamberScreenHandler extends ScreenHandler {
     public static final int DATA_MODEL_SLOT = 0;
@@ -21,28 +25,28 @@ public class SimulationChamberScreenHandler extends ScreenHandler {
     public static final int OUTPUT_SLOT = 2;
     public static final int PRISTINE_SLOT = 3;
     private Inventory inventory;
-    private PlayerEntity player;
-    private Double energy;
+    private final PlayerEntity player;
     private SimulationChamberEntity blockEntity;
-    private BlockPos blockPos;
+    public BlockPos blockPos;
+    private World world;
 
     public static final ScreenHandlerType<SimulationChamberScreenHandler> SCS_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(dmlSimulacrum.id("simulation"), SimulationChamberScreenHandler::new);
 
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf packetByteBuf) {
-        this(syncId, playerInventory, new SimpleInventory(4));
+        super(SCS_HANDLER_TYPE, syncId);
         this.blockPos = packetByteBuf.readBlockPos();
         this.blockEntity = ((SimulationChamberEntity) playerInventory.player.getEntityWorld().getBlockEntity(blockPos));
-        this.energy = packetByteBuf.readDouble();
-    }
-
-    public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-        super(SCS_HANDLER_TYPE, syncId);
-        blockPos = BlockPos.ORIGIN;
-        this.inventory = inventory;
+        this.inventory = blockEntity;
         this.player = playerInventory.player;
+        this.world = this.player.world;;
         checkSize(inventory, 4);
         addSlots();
         addInventorySlots();
+    }
+
+    public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, SimulationChamberEntity blockEntity) {
+        this(syncId, playerInventory, PacketByteBufs.create().writeBlockPos(blockEntity.getPos()));
+        this.inventory = inventory;
     }
 
     @Override
@@ -76,48 +80,37 @@ public class SimulationChamberScreenHandler extends ScreenHandler {
         }
     }
 
-    public SimulationChamberEntity getBlockEntity() {
-        return blockEntity;
-    }
-
-    public Double getEnergy() {
-        return energy;
+    @Override
+    public void sendContentUpdates() {
+        super.sendContentUpdates();
+        if(!world.isClient) {
+            // Update the tile every tick while container is open
+            blockEntity.updateState();
+        }
     }
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
-        ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = slots.get(index);
-
+        ItemStack newStack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(index);
         if (slot != null && slot.hasStack()) {
-            ItemStack itemstack1 = slot.getStack();
-            itemstack = itemstack1.copy();
-
-            int containerSlots = slots.size() - player.inventory.main.size();
-
-            if (index < containerSlots) {
-                if (!insertItem(itemstack1, containerSlots, slots.size(), true)) {
+            ItemStack originalStack = slot.getStack();
+            newStack = originalStack.copy();
+            if (index < this.inventory.size()) {
+                if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!insertItem(itemstack1, 0, containerSlots, false)) {
+            } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false)) {
                 return ItemStack.EMPTY;
             }
 
-            if (itemstack1.getCount() == 0) {
+            if (originalStack.isEmpty()) {
                 slot.setStack(ItemStack.EMPTY);
             } else {
                 slot.markDirty();
             }
-
-            if (itemstack1.getCount() == itemstack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTakeItem(player, itemstack1);
         }
 
-        blockEntity.markDirty();
-        this.player.inventory.markDirty();
-        return itemstack;
+        return newStack;
     }
 }

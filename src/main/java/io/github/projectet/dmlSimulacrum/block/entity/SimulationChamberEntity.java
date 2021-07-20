@@ -7,6 +7,9 @@ import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreenHandler;
 import io.github.projectet.dmlSimulacrum.inventory.ImplementedInventory;
 import io.github.projectet.dmlSimulacrum.util.Animation;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
+import io.netty.buffer.ByteBuf;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -23,11 +26,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable {
 
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
@@ -89,7 +93,15 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     public void tick() {
         if(!world.isClient) {
             ticks++;
+            if(ticks % 5 == 0) {
+                sync();
+            }
         }
+    }
+
+    public void updateState() {
+        BlockState state = world.getBlockState(getPos());
+        world.updateListeners(getPos(), state, state, 3);
     }
 
     @Override
@@ -187,7 +199,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new SimulationChamberScreenHandler(syncId, inv, this);
+        return new SimulationChamberScreenHandler(syncId, inv, this, this);
     }
 
     @Override
@@ -197,7 +209,16 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeBlockPos(this.getPos());
-        buf.writeDouble(getEnergy());
+        buf.writeBlockPos(getPos());
+    }
+
+    @Override
+    public void fromClientTag(CompoundTag tag) {
+        fromTag(world.getBlockState(pos), tag);
+    }
+
+    @Override
+    public CompoundTag toClientTag(CompoundTag tag) {
+        return toTag(tag);
     }
 }
