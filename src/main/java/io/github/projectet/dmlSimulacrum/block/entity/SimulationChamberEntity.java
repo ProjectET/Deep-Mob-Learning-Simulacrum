@@ -1,15 +1,16 @@
 package io.github.projectet.dmlSimulacrum.block.entity;
 
+import dev.nathanpb.dml.item.ItemDataModel;
 import dev.technici4n.fasttransferlib.api.Simulation;
 import dev.technici4n.fasttransferlib.api.energy.EnergyIo;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreenHandler;
 import io.github.projectet.dmlSimulacrum.inventory.ImplementedInventory;
+import io.github.projectet.dmlSimulacrum.item.ItemPolymerClay;
 import io.github.projectet.dmlSimulacrum.util.Animation;
+import io.github.projectet.dmlSimulacrum.util.Constants;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
-import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -26,12 +27,11 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants {
 
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
@@ -82,6 +82,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
             }
             return 0.0;
         }
+
     }
 
     @Override
@@ -154,7 +155,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         percentDone = 0;
         isCrafting = false;
         // Only decrease input and increase output if not aborted, and only if on the server's TE
-        if(!abort && !world.isRemote) {
+        if(!abort && !world.isClient) {
             DataModel.increaseSimulationCount(getDataModel());
 
             ItemStack oldOutput = getLiving();
@@ -174,21 +175,60 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         }
     }
 
-    private boolean canStartSimulation() {
-        return hasEnergyForSimulation() && canContinueSimulation() && !outputIsFull() && !pristineIsFull() && hasPolymerClay();
-    }
-
-    private boolean canContinueSimulation() {
-        return hasDataModel() && DataModel.getTier(getDataModel()) != 0;
-    }
-
-    public boolean hasEnergyForSimulation() {
+        public boolean hasEnergyForSimulation() {
         if(hasDataModel()) {
             int ticksPerSimulation = 300;
             return getEnergy() > (ticksPerSimulation * DataModel.getSimulationTickCost(getDataModel()));
         } else {
             return false;
         }
+    }
+
+    private boolean canStartSimulation() {
+        return hasEnergyForSimulation() && canContinueSimulation() && !outputIsFull() && !pristineIsFull() && hasPolymerClay();
+    }*/
+
+    private boolean canContinueSimulation() {
+        return hasDataModel() && !DataModelUtil.getTier(getDataModel()).toString().equalsIgnoreCase("faulty");
+    }
+
+
+
+    public ItemStack getDataModel() {
+        return getStack(DATA_MODEL_SLOT);
+    }
+
+    private ItemStack getPolymerClay() {
+        return getStack(INPUT_SLOT);
+    }
+
+    private ItemStack getLiving() {
+        return getStack(OUTPUT_SLOT);
+    }
+
+    private ItemStack getPristine() {
+        return getStack(PRISTINE_SLOT);
+    }
+
+    public boolean hasDataModel() {
+        return getDataModel().getItem() instanceof ItemDataModel;
+    }
+
+    public boolean hasPolymerClay() {
+        ItemStack stack = getPolymerClay();
+        return stack.getItem() instanceof ItemPolymerClay && stack.getCount() > 0;
+    }
+
+/*    public boolean outputIsFull() {
+        ItemStack stack = getLiving();
+        if(stack.isEmpty()) {
+            return false;
+        }
+
+        boolean stackLimitReached = stack.getCount() == getLiving().getMaxCount();
+        boolean outputMatches = dataModelMatchesOutput(getDataModel(), getLiving());
+
+        return stackLimitReached || !outputMatches;
     }*/
 
     @Override

@@ -1,6 +1,8 @@
 package io.github.projectet.dmlSimulacrum.block;
 
+import dev.nathanpb.dml.data.DataModelDataKt;
 import io.github.projectet.dmlSimulacrum.block.entity.SimulationChamberEntity;
+import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;

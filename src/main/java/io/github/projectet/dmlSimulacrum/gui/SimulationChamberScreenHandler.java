@@ -3,6 +3,7 @@ package io.github.projectet.dmlSimulacrum.gui;
 import io.github.projectet.dmlSimulacrum.block.entity.SimulationChamberEntity;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import io.github.projectet.dmlSimulacrum.inventory.SlotSimulationChamber;
+import io.github.projectet.dmlSimulacrum.util.Constants;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,11 +17,8 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SimulationChamberScreenHandler extends ScreenHandler {
-    public static final int DATA_MODEL_SLOT = 0;
-    public static final int INPUT_SLOT = 1;
-    public static final int OUTPUT_SLOT = 2;
-    public static final int PRISTINE_SLOT = 3;
+public class SimulationChamberScreenHandler extends ScreenHandler implements Constants {
+
     private Inventory inventory;
     private final PlayerEntity player;
     private SimulationChamberEntity blockEntity;
