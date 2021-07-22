@@ -10,10 +10,13 @@ public class Items {
 
     public static void Register() {
         Registry.register(Registry.ITEM, dmlSimulacrum.id("polymer_clay"), POLYMER_CLAY);
+        Registry.register(Registry.ITEM, dmlSimulacrum.id("overworld_matter"), OVERWORLD_MATTER);
+        Registry.register(Registry.ITEM, dmlSimulacrum.id("hellish_matter"), HELLISH_MATTER);
+        Registry.register(Registry.ITEM, dmlSimulacrum.id("extraterrestrial_matter"), EXTRATERRESTRIAL_MATTER);
     }
 
-    public static final Item POLYMER_CLAY = new Item(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
-    public static final Item OVERWORLD_MATTER = new Item(new FabricItemSettings().maxCount(64));
-    public static final Item HELLISH_MATTER = new Item(new FabricItemSettings().maxCount(64));
-    public static final Item EXTRATERRESTRIAL_MATTER = new Item(new FabricItemSettings().maxCount(64));
+    public static final Item POLYMER_CLAY = new ItemPolymerClay(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
+    public static final Item OVERWORLD_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
+    public static final Item HELLISH_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
+    public static final Item EXTRATERRESTRIAL_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
 }

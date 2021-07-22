@@ -5,17 +5,14 @@ import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import io.github.projectet.dmlSimulacrum.inventory.SlotSimulationChamber;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -38,7 +35,7 @@ public class SimulationChamberScreenHandler extends ScreenHandler {
         this.blockEntity = ((SimulationChamberEntity) playerInventory.player.getEntityWorld().getBlockEntity(blockPos));
         this.inventory = blockEntity;
         this.player = playerInventory.player;
-        this.world = this.player.world;;
+        this.world = this.player.world;
         checkSize(inventory, 4);
         addSlots();
         addInventorySlots();
@@ -47,6 +44,7 @@ public class SimulationChamberScreenHandler extends ScreenHandler {
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, SimulationChamberEntity blockEntity) {
         this(syncId, playerInventory, PacketByteBufs.create().writeBlockPos(blockEntity.getPos()));
         this.inventory = inventory;
+        this.blockEntity = blockEntity;
     }
 
     @Override
@@ -84,7 +82,7 @@ public class SimulationChamberScreenHandler extends ScreenHandler {
     public void sendContentUpdates() {
         super.sendContentUpdates();
         if(!world.isClient) {
-            // Update the tile every tick while container is open
+            // Update the BE every tick while container is open
             blockEntity.updateState();
         }
     }

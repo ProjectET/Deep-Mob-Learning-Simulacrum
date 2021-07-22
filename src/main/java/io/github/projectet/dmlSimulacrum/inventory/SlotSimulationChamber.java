@@ -2,6 +2,7 @@ package io.github.projectet.dmlSimulacrum.inventory;
 
 import dev.nathanpb.dml.item.ItemDataModel;
 import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreenHandler;
+import io.github.projectet.dmlSimulacrum.item.ItemPolymerClay;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,7 +23,7 @@ public class SlotSimulationChamber extends Slot {
             case SimulationChamberScreenHandler.DATA_MODEL_SLOT:
                 return !stack.isEmpty() && item instanceof ItemDataModel;
             case SimulationChamberScreenHandler.INPUT_SLOT:
-                return !stack.isEmpty() && stack.getItem().getName().equals("Clay Polymer");
+                return !stack.isEmpty() && item instanceof ItemPolymerClay;
             default:
                 return false;
         }
