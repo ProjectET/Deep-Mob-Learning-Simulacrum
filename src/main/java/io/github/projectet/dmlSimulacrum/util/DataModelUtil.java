@@ -4,13 +4,13 @@ import dev.nathanpb.dml.data.DataModelDataKt;
 import dev.nathanpb.dml.enums.DataModelTier;
 import dev.nathanpb.dml.enums.EntityCategory;
 import dev.nathanpb.dml.item.ItemDataModel;
+
 import net.minecraft.item.ItemStack;
 
 public class DataModelUtil {
     public static void updateSimulationCount(ItemStack stack) {
         if(stack.getItem() instanceof ItemDataModel) {
-            int i = DataModelDataKt.getDataModel(stack).getTag().getInt("simulationCount");
-            i++;
+            int i = DataModelDataKt.getDataModel(stack).getTag().getInt("simulationCount") + 1;
             DataModelDataKt.getDataModel(stack).getTag().putInt("simulationCount", i);
         }
     }

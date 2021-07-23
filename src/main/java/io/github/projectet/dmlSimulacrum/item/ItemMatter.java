@@ -10,9 +10,13 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class ItemMatter extends Item {
-    public ItemMatter(Settings settings) {
+
+    int experience;
+    public ItemMatter(Settings settings, int experience) {
         super(settings);
+        this.experience = experience;
     }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
@@ -27,7 +31,7 @@ public class ItemMatter extends Item {
                 user.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.NEUTRAL, 0.1f, (float) Math.random());
             }
         }
-        user.addExperience(count * 20);
+        user.addExperience(count * experience);
         return TypedActionResult.consume(stack);
     }
 }

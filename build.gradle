@@ -28,6 +28,9 @@ dependencies {
     modApi ("dev.technici4n:FastTransferLib:${project.ftl_version}")
     include ("dev.technici4n:FastTransferLib:${project.ftl_version}")
 
+    modApi("me.shedaniel.cloth:cloth-config-fabric:ABC") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
     modApi 'com.github.NathanPB:KtDataTagLib:1.4.0'
 
     modApi "io.github.cottonmc:LibGui:${project.libgui_version}"

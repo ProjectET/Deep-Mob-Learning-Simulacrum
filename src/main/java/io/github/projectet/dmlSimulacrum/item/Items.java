@@ -16,7 +16,7 @@ public class Items {
     }
 
     public static final Item POLYMER_CLAY = new ItemPolymerClay(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
-    public static final Item OVERWORLD_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
-    public static final Item HELLISH_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
-    public static final Item EXTRATERRESTRIAL_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS));
+    public static final Item OVERWORLD_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS), dmlSimulacrum.config.Matter_XP.OverworldMatterXP);
+    public static final Item HELLISH_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS), dmlSimulacrum.config.Matter_XP.HellishMatterXP);
+    public static final Item EXTRATERRESTRIAL_MATTER = new ItemMatter(new FabricItemSettings().maxCount(64).group(ItemGroup.MATERIALS), dmlSimulacrum.config.Matter_XP.ExtraMatterXP);
 }
