@@ -5,7 +5,6 @@ import io.github.projectet.dmlSimulacrum.block.SimulationChamber;
 import io.github.projectet.dmlSimulacrum.block.entity.SimulationChamberEntity;
 import io.github.projectet.dmlSimulacrum.config.Config;
 import io.github.projectet.dmlSimulacrum.item.Items;
-import io.github.projectet.dmlSimulacrum.util.NumberRange;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
@@ -49,21 +48,25 @@ public class dmlSimulacrum implements ModInitializer {
 
     public static void testConfig() {
         Config.PristineChance StaticPristine = new Config.PristineChance();
-        HashMap<String, NumberRange> map = AutoConfig.getConfigHolder(Config.class).getConfig().Pristine_Chance.entries;
+        HashMap<String, Integer> map = AutoConfig.getConfigHolder(Config.class).getConfig().Pristine_Chance.entries;
         map.forEach((K, V) -> {
-            if(!V.inRange(V.getInput(), 1, 100)) {
+            if(!inRange(V, 1, 100)) {
                 map.put(K, StaticPristine.entries.get(K));
             }
         });
         AutoConfig.getConfigHolder(Config.class).getConfig().Pristine_Chance.entries = map;
 
         Config.PristineChance StaticCost = new Config.PristineChance();
-        HashMap<String, NumberRange> cost = AutoConfig.getConfigHolder(Config.class).getConfig().Energy_Cost.entries;
+        HashMap<String, Integer> cost = AutoConfig.getConfigHolder(Config.class).getConfig().Energy_Cost.entries;
         cost.forEach((K, V) -> {
-            if(!V.inRange(V.getInput(), 0, 6666)) {
+            if(!inRange(V, 0, 6666)) {
                 cost.put(K, StaticCost.entries.get(K));
             }
         });
         AutoConfig.getConfigHolder(Config.class).getConfig().Energy_Cost.entries = cost;
+    }
+
+    public static boolean inRange(int input, int min, int max) {
+        return ((input >= min) && (input <= max));
     }
 }

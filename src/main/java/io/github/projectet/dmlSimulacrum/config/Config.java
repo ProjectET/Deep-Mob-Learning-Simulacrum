@@ -1,6 +1,5 @@
 package io.github.projectet.dmlSimulacrum.config;
 
-import io.github.projectet.dmlSimulacrum.util.NumberRange;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
@@ -29,26 +28,26 @@ public class Config implements ConfigData{
 
     @me.shedaniel.autoconfig.annotation.Config(name = "Pristine Chance")
     public static class PristineChance {
-        public HashMap<String, NumberRange> entries = new HashMap<>(Map.ofEntries(
-                Map.entry("BASIC", new NumberRange(5)),
-                Map.entry("ADVANCED", new NumberRange(11)),
-                Map.entry("SUPERIOR", new NumberRange(24)),
-                Map.entry("SELF_AWARE", new NumberRange(42))
+        public HashMap<String, Integer> entries = new HashMap<>(Map.ofEntries(
+                Map.entry("BASIC", 5),
+                Map.entry("ADVANCED", 11),
+                Map.entry("SUPERIOR", 24),
+                Map.entry("SELF_AWARE", 42)
         ));
     }
 
     @me.shedaniel.autoconfig.annotation.Config(name = "Energy Cost")
     public static class EnergyCost {
-        public HashMap<String, NumberRange> entries = new HashMap<>(Map.ofEntries(
-            Map.entry("NETHER", new NumberRange(300, 0, 6666)),
-                Map.entry("SLIMY", new NumberRange(160, 0, 6666)),
-                Map.entry("OVERWORLD", new NumberRange(100, 0, 6666)),
-                Map.entry("ZOMBIE", new NumberRange(300, 0, 6666)),
-                Map.entry("SKELETON", new NumberRange(80, 0, 6666)),
-                Map.entry("END", new NumberRange(512, 0, 6666)),
-                Map.entry("GHOST", new NumberRange(372, 0, 6666)),
-                Map.entry("ILLAGER", new NumberRange(412, 0, 6666)),
-                Map.entry("OCEAN", new NumberRange(160, 0, 6666))
+        public HashMap<String, Integer> entries = new HashMap<>(Map.ofEntries(
+            Map.entry("NETHER", 300),
+                Map.entry("SLIMY", 160),
+                Map.entry("OVERWORLD", 100),
+                Map.entry("ZOMBIE", 300),
+                Map.entry("SKELETON", 80),
+                Map.entry("END", 512),
+                Map.entry("GHOST", 372),
+                Map.entry("ILLAGER", 412),
+                Map.entry("OCEAN", 160)
         ));
     }
 }
