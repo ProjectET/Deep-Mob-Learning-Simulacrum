@@ -11,6 +11,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
@@ -24,6 +26,7 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
     private SimulationChamberEntity blockEntity;
     public BlockPos blockPos;
     private World world;
+    PropertyDelegate propertyDelegate;
 
     public static final ScreenHandlerType<SimulationChamberScreenHandler> SCS_HANDLER_TYPE = ScreenHandlerRegistry.registerExtended(dmlSimulacrum.id("simulation"), SimulationChamberScreenHandler::new);
 
@@ -34,9 +37,11 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
         this.inventory = blockEntity;
         this.player = playerInventory.player;
         this.world = this.player.world;
+        this.propertyDelegate = blockEntity.propertyDelegate;
         checkSize(inventory, 4);
         addSlots();
         addInventorySlots();
+        addProperties(propertyDelegate);
     }
 
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, SimulationChamberEntity blockEntity) {
@@ -44,6 +49,11 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
         this.inventory = inventory;
         this.blockEntity = blockEntity;
     }
+
+    public int getSyncedEnergy(){
+        return propertyDelegate.get(0);
+    }
+
 
     @Override
     public boolean canUse(PlayerEntity player) {

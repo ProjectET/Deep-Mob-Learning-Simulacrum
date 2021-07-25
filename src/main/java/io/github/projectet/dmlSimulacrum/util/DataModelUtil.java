@@ -72,9 +72,9 @@ public class DataModelUtil {
                 case "BASIC":
                     return config.getDataModel().getAdvancedDataRequired();
                 case "ADVANCED":
+                    return config.getDataModel().getSuperiorDataRequired();
+                case "SUPERIOR":
                     return config.getDataModel().getSelfAwareDataRequired();
-                default:
-                    return 0;
             }
         }
         return 0;

@@ -66,7 +66,6 @@ public class SimulationChamber extends HorizontalFacingBlock implements BlockEnt
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        player.sendMessage(new LiteralText(String.valueOf(((SimulationChamberEntity) world.getBlockEntity(pos)).getEnergy())), true);
         if (!world.isClient()) {
             NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
             if (screenHandlerFactory != null) {

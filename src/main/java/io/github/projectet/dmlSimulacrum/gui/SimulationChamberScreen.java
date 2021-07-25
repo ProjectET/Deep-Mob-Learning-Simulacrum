@@ -14,6 +14,8 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -28,17 +30,18 @@ import java.util.Locale;
 @Environment(EnvType.CLIENT)
 public class SimulationChamberScreen extends HandledScreen<SimulationChamberScreenHandler> {
 
-    private static final int WIDTH =  232;
-    private static final int HEIGHT = 230;
     public static final Identifier GUI = dmlSimulacrum.id( "textures/gui/simulation_chamber_base.png");
     public static final Identifier defaultGUI = dmlSimulacrum.id("textures/gui/default_gui.png");
-    private double energy;
+    private static final int WIDTH =  232;
+    private static final int HEIGHT = 230;
     private final double maxEnergy;
+    SimulationChamberEntity blockEntity;
+    private double energy;
     private HashMap<String, Animation> animationList;
     private ItemStack currentDataModel = ItemStack.EMPTY;
     private TextRenderer renderer;
-    SimulationChamberEntity blockEntity;
     private World world;
+    private SimulationChamberScreenHandler handler;
 
     public SimulationChamberScreen(SimulationChamberScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -50,6 +53,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         this.animationList = new HashMap<>();
         this.world = blockEntity.getWorld();
         this.renderer = MinecraftClient.getInstance().textRenderer;
+        this.handler = handler;
     }
 
     public static int ensureRange(int value, int min, int max) {
@@ -76,7 +80,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         drawTexture(matrices, x2 - 22, y, 0, 141, 18, 18);
 
         //Energy Bar Rendering
-        int energyBarHeight = ensureRange((int) ( energy / (maxEnergy - 64) * 87), 0, 87);
+        int energyBarHeight = ensureRange((int) ( handler.getSyncedEnergy() / (maxEnergy - 64) * 87), 0, 87);
         int energyBarOffset = 87 - energyBarHeight;
         drawTexture(matrices, x2 + 203,  y + 48 + energyBarOffset, 25, 141, 7, energyBarHeight);
 
@@ -135,35 +139,35 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        /*int x = mouseX - guiLeft;
-        int y = mouseY - guiTop;
+        int x = mouseX - this.x;
+        int y = mouseY - this.y;
 
         NumberFormat f = NumberFormat.getNumberInstance(Locale.ENGLISH);
-        List<String> tooltip = new ArrayList<>();
+        List<Text> tooltip = new ArrayList<>();
 
         if(47 <= y && y < 135) {
             if(13 <= x && x < 22) {
                 // Tooltip for data model data bar
                 if(blockEntity.hasDataModel()) {
                     if(!DataModelUtil.getTier(blockEntity.getDataModel()).toString().equals(DataModelTier.SELF_AWARE.name())) {
-                        tooltip.add(DataModelUtil.getTierCount(blockEntity.getDataModel()) + "/" + DataModelUtil.getTierRoof(blockEntity.getDataModel()) + " Data collected");
+                        tooltip.add(new LiteralText(DataModelUtil.getTierCount(blockEntity.getDataModel()) + "/" + DataModelUtil.getTierRoof(blockEntity.getDataModel()) + " Data collected"));
                     } else {
-                        tooltip.add("This data model has reached the max tier.");
+                        tooltip.add(new LiteralText("This data model has reached the max tier."));
                     }
                 } else {
-                    tooltip.add("Machine is missing a data model");
+                    tooltip.add(new LiteralText("Machine is missing a data model"));
                 }
-                drawHoveringText(tooltip, x + 2, y + 2);
+                renderTooltip(matrices, tooltip, x + 2, y + 2);
             } else if(211 <= x && x < 220) {
                 // Tooltip for energy
-                tooltip.add(f.format(energy) + "/" + f.format(maxEnergy) + " E");
+                tooltip.add(new LiteralText(f.format(handler.getSyncedEnergy()) + "/" + f.format(maxEnergy) + " E"));
                 if(blockEntity.hasDataModel()) {
                     int data = dmlSimulacrum.config.Energy_Cost.entries.get(DataModelUtil.getEntityCategory(blockEntity.getDataModel()).toString());
-                    tooltip.add("Simulations with current data model drains " + f.format(data) + "E/t");
+                    tooltip.add(new LiteralText("Simulations with current data model drains " + f.format(data) + "E/t"));
                 }
-                drawHoveringText(tooltip, x - 90, y - 16);
+                renderTooltip(matrices, tooltip, x - 90, y - 16);
             }
-        }*/
+        }
     }
 
     @Override

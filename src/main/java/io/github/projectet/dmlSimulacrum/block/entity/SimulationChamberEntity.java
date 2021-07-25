@@ -24,8 +24,8 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -40,16 +40,33 @@ import java.util.Random;
 
 public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants {
 
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
+    public int ticks = 0;
+    public int percentDone = 0;
     private Double energyAmount = 0.0;
     private boolean isCrafting = false;
     private boolean byproductSuccess = false;
-    public int ticks = 0;
-    public int percentDone = 0;
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
     private String currentDataModelType = "";
 
     private HashMap<String, String> simulationText = new HashMap<>();
     private HashMap<String, Animation> simulationAnimations = new HashMap<>();
+
+    public PropertyDelegate propertyDelegate = new PropertyDelegate() {
+        @Override
+        public int get(int index) {
+            return energyAmount.intValue();
+        }
+
+        @Override
+        public void set(int index, int value) {
+            energyAmount = (double) value;
+        }
+
+        @Override
+        public int size() {
+            return 1;
+        }
+    };
 
     public SimulationChamberEntity(BlockEntityType<?> type) {
         super(type);
@@ -57,6 +74,16 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
 
     public SimulationChamberEntity() {
         this(dmlSimulacrum.SIMULATION_CHAMBER_ENTITY);
+    }
+
+    private static boolean dataModelMatchesOutput(ItemStack stack, ItemStack output) {
+        Item livingMatter = dataModel.get(DataModelUtil.getEntityCategory(stack).toString()).getMatter();
+        return Registry.ITEM.getId(livingMatter).equals(Registry.ITEM.getId(output.getItem()));
+    }
+
+    private static boolean dataModelMatchesPristine(ItemStack stack, ItemStack pristine) {
+        Item pristineMatter = dataModel.get(DataModelUtil.getEntityCategory(stack).toString()).getPristine();
+        return Registry.ITEM.getId(pristineMatter).equals(Registry.ITEM.getId(pristine.getItem()));
     }
 
     @Override
@@ -122,7 +149,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
                 }
 
                 int energyTickCost = dmlSimulacrum.config.Energy_Cost.entries.get(currentDataModelType);
-                energyAmount =- (double) energyTickCost;
+                energyAmount = energyAmount - (double) energyTickCost;
 
                 if (ticks % ((20 * 15) / 100) == 0) {
                     percentDone++;
@@ -267,7 +294,6 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         }
     }
 
-
     private void startSimulation() {
         isCrafting = true;
         currentDataModelType = DataModelUtil.getEntityCategory(getDataModel()).toString();
@@ -363,26 +389,15 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
             return false;
         }
 
-        boolean stackLimitReached = stack.getCount() == inventory.get(3).getCount();
+        boolean stackLimitReached = stack.getCount() == inventory.get(3).getMaxCount();
         boolean outputMatches = dataModelMatchesPristine(getDataModel(), getPristine());
 
         return stackLimitReached || !outputMatches;
     }
 
-    private static boolean dataModelMatchesOutput(ItemStack stack, ItemStack output) {
-        Item livingMatter = dataModel.get(DataModelUtil.getEntityCategory(stack).toString()).getMatter();
-        return Registry.ITEM.getId(livingMatter).equals(Registry.ITEM.getId(output.getItem()));
-    }
-
-    private static boolean dataModelMatchesPristine(ItemStack stack, ItemStack pristine) {
-        Item pristineMatter = dataModel.get(DataModelUtil.getEntityCategory(stack).toString()).getPristine();
-        return Registry.ITEM.getId(pristineMatter).equals(Registry.ITEM.getId(pristine.getItem()));
-    }
-
-
     @Override
     public Text getDisplayName() {
-        return new LiteralText("");
+        return new LiteralText("Simulation Chamber");
     }
 
     @Nullable
