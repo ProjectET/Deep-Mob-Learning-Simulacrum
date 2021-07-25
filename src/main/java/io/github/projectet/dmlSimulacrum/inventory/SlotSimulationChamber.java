@@ -1,8 +1,11 @@
 package io.github.projectet.dmlSimulacrum.inventory;
 
 import dev.nathanpb.dml.item.ItemDataModel;
+import dev.nathanpb.dml.item.ItemPristineMatter;
+import io.github.projectet.dmlSimulacrum.item.ItemMatter;
 import io.github.projectet.dmlSimulacrum.item.ItemPolymerClay;
 import io.github.projectet.dmlSimulacrum.util.Constants;
+import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,7 +24,7 @@ public class SlotSimulationChamber extends Slot implements Constants {
         Item item = stack.getItem();
         switch(index) {
             case DATA_MODEL_SLOT:
-                return !stack.isEmpty() && item instanceof ItemDataModel;
+                return !stack.isEmpty() && item instanceof ItemDataModel && DataModelUtil.getEntityCategory(stack) != null;
             case INPUT_SLOT:
                 return !stack.isEmpty() && item instanceof ItemPolymerClay;
             default:

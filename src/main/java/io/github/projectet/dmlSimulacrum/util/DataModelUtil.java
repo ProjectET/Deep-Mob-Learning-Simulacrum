@@ -5,12 +5,15 @@ import dev.nathanpb.dml.enums.DataModelTier;
 import dev.nathanpb.dml.enums.EntityCategory;
 import dev.nathanpb.dml.item.ItemDataModel;
 
+import dev.nathanpb.dml.item.ItemPristineMatter;
+import io.github.projectet.dmlSimulacrum.item.ItemMatter;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class DataModelUtil {
     public static void updateSimulationCount(ItemStack stack) {
         if(stack.getItem() instanceof ItemDataModel) {
-            int i = DataModelDataKt.getDataModel(stack).getTag().getInt("simulationCount") + 1;
+            int i = getSimulationCount(stack) + 1;
             DataModelDataKt.getDataModel(stack).getTag().putInt("simulationCount", i);
         }
     }
@@ -42,12 +45,36 @@ public class DataModelUtil {
         }
     }
 
+    public static void updateTierCount(ItemStack stack) {
+        if(stack.getItem() instanceof ItemDataModel) {
+            DataModelDataKt.getDataModel(stack).setDataAmount(getTierCount(stack) + 1);
+        }
+    }
+
     public static DataModelTier getTier(ItemStack stack) {
         if(stack.getItem() instanceof ItemDataModel) {
             return DataModelDataKt.getDataModel(stack).tier();
         }
         else {
             return null;
+        }
+    }
+
+    public static class DataModel2Matter {
+        ItemPristineMatter pristine;
+        ItemMatter matter;
+
+        DataModel2Matter(Item pristine, Item matter) {
+            this.pristine = (ItemPristineMatter) pristine;
+            this.matter = (ItemMatter) matter;
+        }
+
+        public ItemMatter getMatter() {
+            return matter;
+        }
+
+        public ItemPristineMatter getPristine() {
+            return pristine;
         }
     }
 }

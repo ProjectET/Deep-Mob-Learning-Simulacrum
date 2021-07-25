@@ -17,6 +17,9 @@
     ],
     "main": [
       "io.github.projectet.dmlSimulacrum.dmlSimulacrum"
+    ],
+    "modmenu": [
+      "io.github.projectet.dmlSimulacrum.config.ModMenuCompat"
     ]
   },
   "mixins": [
