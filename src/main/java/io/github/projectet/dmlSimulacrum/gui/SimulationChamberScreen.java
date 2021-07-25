@@ -63,15 +63,21 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         int spacing = 12;
         int x2Start = x2 - 3;
         int y2Start = y - 3;
+
+        if(dataModelChanged()) {
+            resetAnimations();
+        }
+
         //Main Chamber GUI
         MinecraftClient.getInstance().getTextureManager().bindTexture(GUI);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexture(matrices, x2, y, 0, 0, 216, 141);
 
+        drawTexture(matrices, x2 - 22, y, 0, 141, 18, 18);
+
         //Energy Bar Rendering
         int energyBarHeight = ensureRange((int) ( energy / (maxEnergy - 64) * 87), 0, 87);
         int energyBarOffset = 87 - energyBarHeight;
-        drawTexture(matrices, x2 - 22, y, 0, 141, 18, 18);
         drawTexture(matrices, x2 + 203,  y + 48 + energyBarOffset, 25, 141, 7, energyBarHeight);
 
         String[] lines;
@@ -123,9 +129,13 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         drawConsoleText(matrices, x2, y, spacing);
     }
 
+    private void resetAnimations() {
+        this.animationList = new HashMap<>();
+    }
+
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        int x = mouseX - guiLeft;
+        /*int x = mouseX - guiLeft;
         int y = mouseY - guiTop;
 
         NumberFormat f = NumberFormat.getNumberInstance(Locale.ENGLISH);
@@ -147,13 +157,13 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
             } else if(211 <= x && x < 220) {
                 // Tooltip for energy
                 tooltip.add(f.format(energy) + "/" + f.format(maxEnergy) + " E");
-                if(tile.hasDataModel()) {
-                    MobMetaData data = DataModel.getMobMetaData(tile.getDataModel());
-                    tooltip.add("Simulations with current data model drains " + f.format(data.getSimulationTickCost()) + "E/t");
+                if(blockEntity.hasDataModel()) {
+                    int data = dmlSimulacrum.config.Energy_Cost.entries.get(DataModelUtil.getEntityCategory(blockEntity.getDataModel()).toString());
+                    tooltip.add("Simulations with current data model drains " + f.format(data) + "E/t");
                 }
                 drawHoveringText(tooltip, x - 90, y - 16);
             }
-        }
+        }*/
     }
 
     @Override
@@ -239,6 +249,10 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         } else {
             animateString(matrices, "_", getAnimation("blinkingUnderline"), null, 16, true, left + 21, top + 49, 0xFFFFFF);
         }
+    }
+
+    private boolean hasEnergy() {
+        return blockEntity.hasEnergyForSimulation();
     }
 
     private boolean dataModelChanged() {

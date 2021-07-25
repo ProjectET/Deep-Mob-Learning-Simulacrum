@@ -24,6 +24,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -155,12 +156,25 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         return !currentDataModelType.equals(DataModelUtil.getEntityCategory(getDataModel()).toString());
     }
 
+    public CompoundTag createTagFromSimText() {
+        CompoundTag tag = new CompoundTag();
+        simulationText.forEach(tag::putString);
+        return tag;
+    }
+
+    public void getSimTextfromTag(CompoundTag tag) {
+        simulationText.forEach((key, text) -> simulationText.put(key, tag.getString(key)));
+    }
+
     @Override
     public void fromTag(BlockState state, CompoundTag tag) {
         super.fromTag(state, tag);
         energyAmount = tag.getDouble("energy");
         byproductSuccess = tag.getBoolean("byproductSuccess");
         isCrafting = tag.getBoolean("isCrafting");
+        percentDone = tag.getInt("percentDone");
+        currentDataModelType = tag.getString("currentDataModelType");
+        getSimTextfromTag(tag.getCompound("simulationText"));
         Inventories.fromTag(tag, inventory);
     }
 
@@ -170,6 +184,9 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         tag.putDouble("energy", energyAmount);
         tag.putBoolean("byproductSuccess", byproductSuccess);
         tag.putBoolean("isCrafting", isCrafting);
+        tag.putInt("percentDone", percentDone);
+        tag.putString("currentDataModelType", currentDataModelType);
+        tag.put("simulationText", createTagFromSimText());
         Inventories.toTag(tag, inventory);
         return tag;
     }
