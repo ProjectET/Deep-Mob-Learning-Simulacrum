@@ -21,6 +21,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -32,13 +33,14 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Random;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
 
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
     public int ticks = 0;
@@ -424,5 +426,44 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     @Override
     public CompoundTag toClientTag(CompoundTag tag) {
         return toTag(tag);
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        switch(side) {
+            case UP:
+                return new int[] {DATA_MODEL_SLOT, INPUT_SLOT};
+            default:
+                return new int[] {OUTPUT_SLOT, PRISTINE_SLOT};
+        }
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        if (dir == Direction.UP) {
+            switch (slot) {
+                case DATA_MODEL_SLOT:
+                    return stack.getItem() instanceof ItemDataModel && DataModelUtil.getEntityCategory(stack) != null;
+                case INPUT_SLOT:
+                    return stack.getItem() instanceof ItemPolymerClay;
+                default:
+                    return false;
+            }
+        }
+        else return false;
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        if(dir != Direction.UP) {
+            switch (slot) {
+                case OUTPUT_SLOT:
+                case PRISTINE_SLOT:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        else return false;
     }
 }

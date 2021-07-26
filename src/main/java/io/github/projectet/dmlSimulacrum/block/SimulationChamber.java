@@ -1,8 +1,6 @@
 package io.github.projectet.dmlSimulacrum.block;
 
-import dev.nathanpb.dml.data.DataModelDataKt;
 import io.github.projectet.dmlSimulacrum.block.entity.SimulationChamberEntity;
-import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -13,7 +11,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;

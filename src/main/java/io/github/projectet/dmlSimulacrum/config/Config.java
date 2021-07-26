@@ -10,23 +10,26 @@ import java.util.Map;
 public class Config implements ConfigData{
 
     @ConfigEntry.Gui.RequiresRestart
+    @ConfigEntry.Category("default")
+    @ConfigEntry.Gui.TransitiveObject
     public MatterXP Matter_XP = new MatterXP();
 
-    @ConfigEntry.Gui.RequiresRestart
+    @ConfigEntry.Gui.Excluded
     public PristineChance Pristine_Chance = new PristineChance();
 
-    @ConfigEntry.Gui.RequiresRestart
-    @ConfigEntry.Gui.Tooltip(count = 2)
+    @ConfigEntry.Gui.Excluded
     public EnergyCost Energy_Cost = new EnergyCost();
 
-    @me.shedaniel.autoconfig.annotation.Config(name = "Matter XP")
-    public static class MatterXP {
+    @me.shedaniel.autoconfig.annotation.Config(name = "matter_xp")
+    public static class MatterXP implements ConfigData {
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 999)
         public int OverworldMatterXP = 10;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 999)
         public int HellishMatterXP = 14;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 999)
         public int ExtraMatterXP = 20;
     }
 
-    @me.shedaniel.autoconfig.annotation.Config(name = "Pristine Chance")
     public static class PristineChance {
         public HashMap<String, Integer> entries = new HashMap<>(Map.ofEntries(
                 Map.entry("BASIC", 5),
@@ -36,7 +39,6 @@ public class Config implements ConfigData{
         ));
     }
 
-    @me.shedaniel.autoconfig.annotation.Config(name = "Energy Cost")
     public static class EnergyCost {
         public HashMap<String, Integer> entries = new HashMap<>(Map.ofEntries(
             Map.entry("NETHER", 300),

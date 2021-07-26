@@ -1,0 +1,11 @@
+{
+  "block.dmlsimulacrum.simulation_chamber": "Simulation Chamber",
+  "item.dmlsimulacrum.polymer_clay": "Polymer Clay",
+  "item.dmlsimulacrum.overworld_matter": "Overworld Matter",
+  "item.dmlsimulacrum.hellish_matter": "Hellish Matter",
+  "item.dmlsimulacrum.extraterrestrial_matter": "Extraterrestrial Matter",
+  "text.autoconfig.dml-simulacrum.title": "Deep Mob Learning: Simulacrum",
+  "text.autoconfig.dml-simulacrum.option.Matter_XP.OverworldMatterXP":  "Overworld Matter XP",
+  "text.autoconfig.dml-simulacrum.option.Matter_XP.HellishMatterXP":  "Hellish Matter XP",
+  "text.autoconfig.dml-simulacrum.option.Matter_XP.ExtraMatterXP": "Extraterrestrial Matter XP"
+}

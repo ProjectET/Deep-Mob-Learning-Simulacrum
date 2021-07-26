@@ -14,7 +14,6 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -36,7 +35,6 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
     private static final int HEIGHT = 230;
     private final double maxEnergy;
     SimulationChamberEntity blockEntity;
-    private double energy;
     private HashMap<String, Animation> animationList;
     private ItemStack currentDataModel = ItemStack.EMPTY;
     private TextRenderer renderer;
@@ -48,7 +46,6 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         this.backgroundWidth = WIDTH;
         this.backgroundHeight = HEIGHT;
         this.blockEntity = (SimulationChamberEntity) MinecraftClient.getInstance().world.getBlockEntity(handler.blockPos);
-        this.energy = blockEntity.getEnergy();
         this.maxEnergy = blockEntity.getEnergyCapacity();
         this.animationList = new HashMap<>();
         this.world = blockEntity.getWorld();
@@ -63,10 +60,10 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         DecimalFormat f = new DecimalFormat("0.#");
-        int x2 = x + 8;
+        int x = this.x + 8;
         int spacing = 12;
-        int x2Start = x2 - 3;
-        int y2Start = y - 3;
+        int xStart = x - 3;
+        int yStart = y - 3;
 
         if(dataModelChanged()) {
             resetAnimations();
@@ -75,14 +72,14 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         //Main Chamber GUI
         MinecraftClient.getInstance().getTextureManager().bindTexture(GUI);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        drawTexture(matrices, x2, y, 0, 0, 216, 141);
+        drawTexture(matrices, x, y, 0, 0, 216, 141);
 
-        drawTexture(matrices, x2 - 22, y, 0, 141, 18, 18);
+        drawTexture(matrices, x - 22, y, 0, 141, 18, 18);
 
         //Energy Bar Rendering
         int energyBarHeight = ensureRange((int) ( handler.getSyncedEnergy() / (maxEnergy - 64) * 87), 0, 87);
         int energyBarOffset = 87 - energyBarHeight;
-        drawTexture(matrices, x2 + 203,  y + 48 + energyBarOffset, 25, 141, 7, energyBarHeight);
+        drawTexture(matrices, x + 203,  y + 48 + energyBarOffset, 25, 141, 7, energyBarHeight);
 
         String[] lines;
 
@@ -92,8 +89,8 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
             Animation a1 = getAnimation("pleaseInsert1");
             Animation a2 = getAnimation("pleaseInsert2");
 
-            animateString(matrices, lines[0], a1, null, 1, false, x2 + 10, y2Start + spacing, 0xFFFFFF);
-            animateString(matrices, lines[1], a2, a1, 1, false, x2Start + 10, y2Start + (spacing * 2), 0xFFFFFF);
+            animateString(matrices, lines[0], a1, null, 1, false, x + 10, yStart + spacing, 0xFFFFFF);
+            animateString(matrices, lines[1], a2, a1, 1, false, xStart + 10, yStart + (spacing * 2), 0xFFFFFF);
 
         } else if(DataModelUtil.getTier(blockEntity.getDataModel()).toString().equalsIgnoreCase("faulty")) {
 
@@ -103,34 +100,34 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
             Animation insufData2 = getAnimation("insufData2");
             Animation insufData3 = getAnimation("insufData3");
 
-            animateString(matrices, lines[0], insufData, null, 1, false, x2 + 10, y2Start + spacing, 0xFFFFFF);
-            animateString(matrices, lines[1], insufData2, insufData, 1, false,  x2 + 10, y2Start + (spacing * 2), 0xFFFFFF);
-            animateString(matrices, lines[2], insufData3, insufData2, 1, false,  x2 + 10, y2Start + (spacing * 3), 0xFFFFFF);
+            animateString(matrices, lines[0], insufData, null, 1, false, x + 10, yStart + spacing, 0xFFFFFF);
+            animateString(matrices, lines[1], insufData2, insufData, 1, false,  x + 10, yStart + (spacing * 2), 0xFFFFFF);
+            animateString(matrices, lines[2], insufData3, insufData2, 1, false,  x + 10, yStart + (spacing * 3), 0xFFFFFF);
 
         } else {
             // Draw current data model data
             if(DataModelUtil.getTier(blockEntity.getDataModel()).toString().equals(DataModelTier.SELF_AWARE.toString())) {
-                drawTexture(matrices, x2 + 6,  y + 48, 18, 141, 7, 87);
+                drawTexture(matrices, x + 6,  y + 48, 18, 141, 7, 87);
             } else {
-                int collectedData = DataModelUtil.getTierCount(blockEntity.getDataModel());
-                int tierRoof = DataModelUtil.getTierRoof(blockEntity.getDataModel());
+                int collectedData = DataModelUtil.getTierCount(blockEntity.getDataModel()) - DataModelUtil.getTier(blockEntity.getDataModel()).getDataAmount();
+                int tierRoof = DataModelUtil.getTierRoof(blockEntity.getDataModel()) - DataModelUtil.getTier(blockEntity.getDataModel()).getDataAmount();
 
                 int experienceBarHeight = (int) (((float) collectedData / tierRoof * 87));
                 int experienceBarOffset = 87 - experienceBarHeight;
-                drawTexture(matrices, x2 + 6,  y + 48 + experienceBarOffset, 18, 141, 7, experienceBarHeight);
+                drawTexture(matrices, x + 6,  y + 48 + experienceBarOffset, 18, 141, 7, experienceBarHeight);
             }
 
-            drawStringWithShadow(matrices, renderer, "Tier: " + DataModelUtil.getTier(blockEntity.getDataModel()), x2 + 10, y2Start + spacing, 0xFFFFFF);
-            drawStringWithShadow(matrices, renderer, "Iterations: " + f.format(DataModelUtil.getSimulationCount(blockEntity.getDataModel())), x2 + 10, y2Start + spacing * 2, 0xFFFFFF);
-            drawStringWithShadow(matrices, renderer, "Pristine chance: " + dmlSimulacrum.config.Pristine_Chance.entries.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString()) + "%", x2 + 10, y2Start + spacing * 3, 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, "Tier: " + DataModelUtil.getTier(blockEntity.getDataModel()), x + 10, yStart + spacing, 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, "Iterations: " + f.format(DataModelUtil.getSimulationCount(blockEntity.getDataModel())), x + 10, yStart + spacing * 2, 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, "Pristine chance: " + dmlSimulacrum.config.Pristine_Chance.entries.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString()) + "%", x + 10, yStart + spacing * 3, 0xFFFFFF);
         }
 
         // Draw player inventory
         MinecraftClient.getInstance().getTextureManager().bindTexture(defaultGUI);
-        drawTexture(matrices, x2 + 20, y + 145, 0, 0, 176, 90);
+        drawTexture(matrices, x + 20, y + 145, 0, 0, 176, 90);
 
 
-        drawConsoleText(matrices, x2, y, spacing);
+        drawConsoleText(matrices, x, y, spacing);
     }
 
     private void resetAnimations() {
@@ -150,7 +147,9 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
                 // Tooltip for data model data bar
                 if(blockEntity.hasDataModel()) {
                     if(!DataModelUtil.getTier(blockEntity.getDataModel()).toString().equals(DataModelTier.SELF_AWARE.name())) {
-                        tooltip.add(new LiteralText(DataModelUtil.getTierCount(blockEntity.getDataModel()) + "/" + DataModelUtil.getTierRoof(blockEntity.getDataModel()) + " Data collected"));
+                        int currentTierCount = DataModelUtil.getTierCount(blockEntity.getDataModel()) - DataModelUtil.getTier(blockEntity.getDataModel()).getDataAmount();
+                        int currentTierRoof = DataModelUtil.getTierRoof(blockEntity.getDataModel()) - DataModelUtil.getTier(blockEntity.getDataModel()).getDataAmount();
+                        tooltip.add(new LiteralText(currentTierCount + "/" + currentTierRoof + " Data collected"));
                     } else {
                         tooltip.add(new LiteralText("This data model has reached the max tier."));
                     }
@@ -186,24 +185,24 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         }
     }
 
-    private void animateString(MatrixStack matrices, String string, Animation anim, Animation precedingAnim, int delay, boolean loop, int left, int top, int color) {
+    private void animateString(MatrixStack matrices, String string, Animation anim, Animation precedingAnim, int delay, boolean loop, int x, int y, int color) {
         if(precedingAnim != null) {
             if (precedingAnim.hasFinished()) {
                 String result = anim.animate(string, delay, world.getLevelProperties().getTime(), loop);
-                drawStringWithShadow(matrices, renderer, result, left, top, color);
+                drawStringWithShadow(matrices, renderer, result, x, y, color);
             } else {
                 return;
             }
         }
         String result = anim.animate(string, delay, world.getLevelProperties().getTime(), loop);
-        drawStringWithShadow(matrices, renderer, result, left, top, color);
+        drawStringWithShadow(matrices, renderer, result, x, y, color);
     }
 
-    private void drawConsoleText(MatrixStack matrices, int left, int top, int spacing) {
+    private void drawConsoleText(MatrixStack matrices, int x, int y, int spacing) {
         String[] lines;
 
         if(!blockEntity.hasDataModel() || DataModelUtil.getTier(blockEntity.getDataModel()).toString().equalsIgnoreCase("faulty")) {
-            animateString(matrices,"_", getAnimation("blinkingUnderline"), null, 16, true, left + 21, top + 49, 0xFFFFFF);
+            animateString(matrices,"_", getAnimation("blinkingUnderline"), null, 16, true, x + 21, y + 49, 0xFFFFFF);
 
         } else if(!blockEntity.hasPolymerClay() && !blockEntity.isCrafting()) {
             lines = new String[] {"Cannot begin simulation", "Missing polymer medium", "_"};
@@ -211,9 +210,9 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
             Animation a2 = getAnimation("inputSlotEmpty2");
             Animation a3 = getAnimation("blinkingUnderline1");
 
-            animateString(matrices, lines[0], a1, null, 1, false, left + 21, top + 51, 0xFFFFFF);
-            animateString(matrices, lines[1], a2, a1, 1, false, left + 21, top + 51 + spacing, 0xFFFFFF);
-            animateString(matrices, lines[2], a3, a2, 16, true, left + 21, top + 51 + (spacing * 2), 0xFFFFFF);
+            animateString(matrices, lines[0], a1, null, 1, false, x + 21, y + 51, 0xFFFFFF);
+            animateString(matrices, lines[1], a2, a1, 1, false, x + 21, y + 51 + spacing, 0xFFFFFF);
+            animateString(matrices, lines[2], a3, a2, 16, true, x + 21, y + 51 + (spacing * 2), 0xFFFFFF);
 
         } else if(!hasEnergy() && !blockEntity.isCrafting()) {
             lines = new String[] {"Cannot begin simulation", "System energy levels critical", "_"};
@@ -221,37 +220,37 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
             Animation a2 = getAnimation("lowEnergy2");
             Animation a3 = getAnimation("blinkingUnderline2");
 
-            animateString(matrices, lines[0], a1, null, 1, false, left + 21, top + 51, 0xFFFFFF);
-            animateString(matrices, lines[1], a2, a1, 1, false, left + 21, top + 51 + spacing, 0xFFFFFF);
-            animateString(matrices, lines[2], a3, a2, 16, true, left + 21, top + 51 + (spacing * 2), 0xFFFFFF);
+            animateString(matrices, lines[0], a1, null, 1, false, x + 21, y + 51, 0xFFFFFF);
+            animateString(matrices, lines[1], a2, a1, 1, false, x + 21, y + 51 + spacing, 0xFFFFFF);
+            animateString(matrices, lines[2], a3, a2, 16, true, x + 21, y + 51 + (spacing * 2), 0xFFFFFF);
         } else if(blockEntity.outputIsFull() || blockEntity.pristineIsFull()) {
             lines = new String[] {"Cannot begin simulation", "Output or pristine buffer is full", "_"};
             Animation a1 = getAnimation("outputSlotFilled1");
             Animation a2 = getAnimation("outputSlotFilled2");
             Animation a3 = getAnimation("blinkingUnderline3");
 
-            animateString(matrices, lines[0], a1, null, 1, false, left + 21, top + 51, 0xFFFFFF);
-            animateString(matrices, lines[1], a2, a1, 1, false, left + 21, top + 51 + spacing, 0xFFFFFF);
-            animateString(matrices, lines[2], a3, a2, 16, true, left + 21, top + 51 + (spacing * 2), 0xFFFFFF);
+            animateString(matrices, lines[0], a1, null, 1, false, x + 21, y + 51, 0xFFFFFF);
+            animateString(matrices, lines[1], a2, a1, 1, false, x + 21, y + 51 + spacing, 0xFFFFFF);
+            animateString(matrices, lines[2], a3, a2, 16, true, x + 21, y + 51 + (spacing * 2), 0xFFFFFF);
         } else if(blockEntity.isCrafting()) {
-            drawStringWithShadow(matrices, renderer, blockEntity.percentDone + "%", left + 176, top + 123, 0x62D8FF);
+            drawStringWithShadow(matrices, renderer, blockEntity.percentDone + "%", x + 176, y + 123, 0x62D8FF);
 
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine1"), left + 21, top + 51, 0xFFFFFF);
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine1Version"), left + 124, top + 51, 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine1"), x + 21, y + 51, 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine1Version"), x + 124, y + 51, 0xFFFFFF);
 
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine2"), left + 21, top + 51 + spacing, 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine2"), x + 21, y + 51 + spacing, 0xFFFFFF);
 
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine3"), left + 21, top + 51 + (spacing * 2), 0xFFFFFF);
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine4"), left + 21, top + 51 + (spacing * 3), 0xFFFFFF);
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine5"), left + 21, top + 51 + (spacing * 4), 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine3"), x + 21, y + 51 + (spacing * 2), 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine4"), x + 21, y + 51 + (spacing * 3), 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine5"), x + 21, y + 51 + (spacing * 4), 0xFFFFFF);
 
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine6"), left + 21, top + 51 + (spacing * 5), 0xFFFFFF);
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine6Result"), left + 140, top + 51 + (spacing * 5), 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine6"), x + 21, y + 51 + (spacing * 5), 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine6Result"), x + 140, y + 51 + (spacing * 5), 0xFFFFFF);
 
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine7"), left + 21, top + 51 + (spacing * 6), 0xFFFFFF);
-            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("blinkingDots1"), left + 128, top + 51 + (spacing * 6), 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("simulationProgressLine7"), x + 21, y + 51 + (spacing * 6), 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, blockEntity.getSimulationText("blinkingDots1"), x + 128, y + 51 + (spacing * 6), 0xFFFFFF);
         } else {
-            animateString(matrices, "_", getAnimation("blinkingUnderline"), null, 16, true, left + 21, top + 49, 0xFFFFFF);
+            animateString(matrices, "_", getAnimation("blinkingUnderline"), null, 16, true, x + 21, y + 49, 0xFFFFFF);
         }
     }
 

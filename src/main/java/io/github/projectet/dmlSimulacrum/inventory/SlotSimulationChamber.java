@@ -1,8 +1,6 @@
 package io.github.projectet.dmlSimulacrum.inventory;
 
 import dev.nathanpb.dml.item.ItemDataModel;
-import dev.nathanpb.dml.item.ItemPristineMatter;
-import io.github.projectet.dmlSimulacrum.item.ItemMatter;
 import io.github.projectet.dmlSimulacrum.item.ItemPolymerClay;
 import io.github.projectet.dmlSimulacrum.util.Constants;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
