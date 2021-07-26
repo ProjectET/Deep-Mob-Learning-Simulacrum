@@ -6,7 +6,7 @@
     "DCD"
   ],
   "key": {
-    "M": { "item": "deepmoblearning:machine_casing" },
+    "M": { "item": "dml-refabricated:machine_casing" },
     "P": { "item": "minecraft:ender_pearl" },
     "G": { "item": "minecraft:glass_pane" },
     "C": { "item": "minecraft:comparator" },
