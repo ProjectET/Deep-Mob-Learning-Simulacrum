@@ -1,15 +1,16 @@
 package io.github.projectet.dmlSimulacrum.block;
 
 import io.github.projectet.dmlSimulacrum.block.entity.SimulationChamberEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalFacingBlock;
+import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -20,8 +21,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class SimulationChamber extends HorizontalFacingBlock implements BlockEntityProvider {
 
+public class SimulationChamber extends BlockWithEntity {
+
+    private static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     BlockState state;
 
     public SimulationChamber(Settings settings) {
@@ -75,5 +78,10 @@ public class SimulationChamber extends HorizontalFacingBlock implements BlockEnt
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         return blockEntity instanceof NamedScreenHandlerFactory ? (NamedScreenHandlerFactory) blockEntity : null;
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, dmlSimulacrum.SIMULATION_CHAMBER_ENTITY, SimulationChamberEntity::tick);
     }
 }

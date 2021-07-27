@@ -17,8 +17,6 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -42,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Random;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, BlockEntityTicker<SimulationChamberEntity>, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
 
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
     public int ticks = 0;
@@ -125,48 +123,47 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Bl
         return false;
     }
 
-    @Override
-    public void tick(World world, BlockPos pos, BlockState state, SimulationChamberEntity blockEntity) {
-        ticks++;
+    public static void tick(World world, BlockPos pos, BlockState state, SimulationChamberEntity blockEntity) {
+        blockEntity.ticks++;
         if(!world.isClient) {
-            if(!isCrafting()) {
-                if(canStartSimulation()) {
-                    startSimulation();
+            if(!blockEntity.isCrafting()) {
+                if(blockEntity.canStartSimulation()) {
+                    blockEntity.startSimulation();
                 }
             } else {
-                if (!canContinueSimulation() || dataModelTypeChanged()) {
-                    finishSimulation(true);
+                if (!blockEntity.canContinueSimulation() || blockEntity.dataModelTypeChanged()) {
+                    blockEntity.finishSimulation(true);
                     return;
                 }
 
-                updateSimulationText(getDataModel());
+                blockEntity.updateSimulationText(blockEntity.getDataModel());
 
-                if (percentDone == 0) {
+                if (blockEntity.percentDone == 0) {
                     Random rand = new Random();
                     int num = rand.nextInt(100);
-                    int chance = dmlSimulacrum.config.Pristine_Chance.entries.get(DataModelUtil.getTier(getDataModel()).toString());
-                    byproductSuccess = num <= SimulationChamberScreen.ensureRange(chance, 1, 100);
+                    int chance = dmlSimulacrum.config.Pristine_Chance.entries.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString());
+                    blockEntity.byproductSuccess = num <= SimulationChamberScreen.ensureRange(chance, 1, 100);
                 }
 
-                int energyTickCost = dmlSimulacrum.config.Energy_Cost.entries.get(currentDataModelType);
-                energyAmount = energyAmount - (double) energyTickCost;
+                int energyTickCost = dmlSimulacrum.config.Energy_Cost.entries.get(blockEntity.currentDataModelType);
+                blockEntity.energyAmount = blockEntity.energyAmount - (double) energyTickCost;
 
-                if (ticks % ((20 * 15) / 100) == 0) {
-                    percentDone++;
+                if (blockEntity.ticks % ((20 * 15) / 100) == 0) {
+                    blockEntity.percentDone++;
                 }
 
                 // Notify while crafting every other second, this is done more frequently when the container is open
-                if (ticks % (20 * 2) == 0) {
-                    updateState();
+                if (blockEntity.ticks % (20 * 2) == 0) {
+                    blockEntity.updateState();
                 }
             }
 
-            if(percentDone == 100) {
-                finishSimulation(false);
+            if(blockEntity.percentDone == 100) {
+                blockEntity.finishSimulation(false);
                 return;
             }
 
-            sync();
+            blockEntity.sync();
         }
     }
 
