@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -70,7 +69,7 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
     private void addInventorySlots() {
         // Bind actionbar
         for (int row = 0; row < 9; row++) {
-            Slot slot = new Slot(player.inventory, row, 36 + row * 18, 211);
+            Slot slot = new Slot(player.getInventory(), row, 36 + row * 18, 211);
             addSlot(slot);
         }
 
@@ -80,7 +79,7 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
                 int x = 36 + column * 18;
                 int y = 153 + row * 18;
                 int index = column + row * 9 + 9;
-                Slot slot = new Slot(player.inventory, index, x, y);
+                Slot slot = new Slot(player.getInventory(), index, x, y);
                 addSlot(slot);
             }
         }

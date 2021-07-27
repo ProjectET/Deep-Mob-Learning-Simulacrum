@@ -1,5 +1,6 @@
 package io.github.projectet.dmlSimulacrum.util;
 
+import dev.nathanpb.dml.DeepMobLearningKt;
 import dev.nathanpb.dml.data.DataModelDataKt;
 import dev.nathanpb.dml.enums.DataModelTier;
 import dev.nathanpb.dml.enums.EntityCategory;
@@ -8,7 +9,6 @@ import dev.nathanpb.dml.ModConfig;
 
 import dev.nathanpb.dml.item.ItemPristineMatter;
 import io.github.projectet.dmlSimulacrum.item.ItemMatter;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -65,7 +65,7 @@ public class DataModelUtil {
 
     public static int getTierRoof(ItemStack stack) {
         if (stack.getItem() instanceof ItemDataModel) {
-            ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+            ModConfig config = DeepMobLearningKt.getConfig();
             switch (getTier(stack).toString()) {
                 case "FAULTY":
                     return config.getDataModel().getBasicDataRequired();

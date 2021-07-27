@@ -9,6 +9,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
@@ -43,7 +44,7 @@ public class dmlSimulacrum implements ModInitializer {
         Registry.register(Registry.BLOCK, id("simulation_chamber"), SIMULATION_CHAMBER);
         Registry.register(Registry.ITEM, id("simulation_chamber"), new BlockItem(SIMULATION_CHAMBER, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
 
-        SIMULATION_CHAMBER_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, id("simulation_chamber_entity"), BlockEntityType.Builder.create(SimulationChamberEntity::new, SIMULATION_CHAMBER).build(null));
+        SIMULATION_CHAMBER_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, id("simulation_chamber_entity"), FabricBlockEntityTypeBuilder.create(SimulationChamberEntity::new, SIMULATION_CHAMBER).build());
         EnergyApi.SIDED.registerSelf(SIMULATION_CHAMBER_ENTITY);
         Items.Register();
     }

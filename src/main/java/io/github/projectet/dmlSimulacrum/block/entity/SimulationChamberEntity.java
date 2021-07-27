@@ -17,6 +17,7 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,23 +25,24 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Random;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Tickable, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
+public class SimulationChamberEntity extends BlockEntity implements EnergyIo, BlockEntityTicker<SimulationChamberEntity>, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
 
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
     public int ticks = 0;
@@ -70,12 +72,8 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         }
     };
 
-    public SimulationChamberEntity(BlockEntityType<?> type) {
-        super(type);
-    }
-
-    public SimulationChamberEntity() {
-        this(dmlSimulacrum.SIMULATION_CHAMBER_ENTITY);
+    public SimulationChamberEntity(BlockPos pos, BlockState state) {
+        super(dmlSimulacrum.SIMULATION_CHAMBER_ENTITY, pos, state);
     }
 
     private static boolean dataModelMatchesOutput(ItemStack stack, ItemStack output) {
@@ -128,7 +126,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     }
 
     @Override
-    public void tick() {
+    public void tick(World world, BlockPos pos, BlockState state, SimulationChamberEntity blockEntity) {
         ticks++;
         if(!world.isClient) {
             if(!isCrafting()) {
@@ -185,39 +183,39 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
         return !currentDataModelType.equals(DataModelUtil.getEntityCategory(getDataModel()).toString());
     }
 
-    public CompoundTag createTagFromSimText() {
-        CompoundTag tag = new CompoundTag();
+    public NbtCompound createTagFromSimText() {
+        NbtCompound tag = new NbtCompound();
         simulationText.forEach(tag::putString);
         return tag;
     }
 
-    public void getSimTextfromTag(CompoundTag tag) {
+    public void getSimTextfromTag(NbtCompound tag) {
         simulationText.forEach((key, text) -> simulationText.put(key, tag.getString(key)));
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
-        super.fromTag(state, tag);
-        energyAmount = tag.getDouble("energy");
-        byproductSuccess = tag.getBoolean("byproductSuccess");
-        isCrafting = tag.getBoolean("isCrafting");
-        percentDone = tag.getInt("percentDone");
-        currentDataModelType = tag.getString("currentDataModelType");
-        getSimTextfromTag(tag.getCompound("simulationText"));
-        Inventories.fromTag(tag, inventory);
+    public void readNbt(NbtCompound compound) {
+        super.readNbt(compound);
+        energyAmount = compound.getDouble("energy");
+        byproductSuccess = compound.getBoolean("byproductSuccess");
+        isCrafting = compound.getBoolean("isCrafting");
+        percentDone = compound.getInt("percentDone");
+        currentDataModelType = compound.getString("currentDataModelType");
+        getSimTextfromTag(compound.getCompound("simulationText"));
+        Inventories.readNbt(compound, inventory);
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
-        tag.putDouble("energy", energyAmount);
-        tag.putBoolean("byproductSuccess", byproductSuccess);
-        tag.putBoolean("isCrafting", isCrafting);
-        tag.putInt("percentDone", percentDone);
-        tag.putString("currentDataModelType", currentDataModelType);
-        tag.put("simulationText", createTagFromSimText());
-        Inventories.toTag(tag, inventory);
-        return tag;
+    public NbtCompound writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
+        compound.putDouble("energy", energyAmount);
+        compound.putBoolean("byproductSuccess", byproductSuccess);
+        compound.putBoolean("isCrafting", isCrafting);
+        compound.putInt("percentDone", percentDone);
+        compound.putString("currentDataModelType", currentDataModelType);
+        compound.put("simulationText", createTagFromSimText());
+        Inventories.writeNbt(compound, inventory);
+        return compound;
     }
 
     private void updateSimulationText(ItemStack stack) {
@@ -419,13 +417,13 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Ti
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag) {
-        fromTag(world.getBlockState(pos), tag);
+    public void fromClientTag(NbtCompound compound) {
+        readNbt(compound);
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag) {
-        return toTag(tag);
+    public NbtCompound toClientTag(NbtCompound compound) {
+        return writeNbt(compound);
     }
 
     @Override

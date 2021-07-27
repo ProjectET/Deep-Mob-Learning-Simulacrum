@@ -71,7 +71,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
 
         //Main Chamber GUI
         MinecraftClient.getInstance().getTextureManager().bindTexture(GUI);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexture(matrices, x, y, 0, 0, 216, 141);
 
         drawTexture(matrices, x - 22, y, 0, 141, 18, 18);
