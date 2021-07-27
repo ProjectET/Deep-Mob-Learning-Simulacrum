@@ -12,9 +12,7 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -24,12 +22,24 @@ import org.jetbrains.annotations.Nullable;
 
 public class SimulationChamber extends BlockWithEntity {
 
-    private static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+    public static final DirectionProperty FACING;
     BlockState state;
+
+    static {
+        FACING = Properties.HORIZONTAL_FACING;
+    }
 
     public SimulationChamber(Settings settings) {
         super(settings);
         state = stateManager.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH);
+    }
+
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
+    }
+
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Nullable
@@ -78,6 +88,10 @@ public class SimulationChamber extends BlockWithEntity {
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         return blockEntity instanceof NamedScreenHandlerFactory ? (NamedScreenHandlerFactory) blockEntity : null;
+    }
+
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     @Override
