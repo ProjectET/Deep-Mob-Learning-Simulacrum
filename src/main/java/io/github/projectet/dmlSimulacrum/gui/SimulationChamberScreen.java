@@ -37,9 +37,9 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
     SimulationChamberEntity blockEntity;
     private HashMap<String, Animation> animationList;
     private ItemStack currentDataModel = ItemStack.EMPTY;
-    private TextRenderer renderer;
-    private World world;
-    private SimulationChamberScreenHandler handler;
+    private final TextRenderer renderer;
+    private final World world;
+    private final SimulationChamberScreenHandler handler;
 
     public SimulationChamberScreen(SimulationChamberScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -70,7 +70,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         }
 
         //Main Chamber GUI
-        MinecraftClient.getInstance().getTextureManager().bindTexture(GUI);
+        RenderSystem.setShaderTexture(0, GUI);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexture(matrices, x, y, 0, 0, 216, 141);
 
@@ -123,7 +123,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         }
 
         // Draw player inventory
-        MinecraftClient.getInstance().getTextureManager().bindTexture(defaultGUI);
+        RenderSystem.setShaderTexture(0, defaultGUI);
         drawTexture(matrices, x + 20, y + 145, 0, 0, 176, 90);
 
 
