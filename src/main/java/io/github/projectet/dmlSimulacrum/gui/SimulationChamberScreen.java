@@ -15,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -62,7 +63,6 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         DecimalFormat f = new DecimalFormat("0.#");
         int x = this.x + 8;
         int spacing = 12;
-        int xStart = x - 3;
         int yStart = y - 3;
 
         if(dataModelChanged()) {
@@ -90,7 +90,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
             Animation a2 = getAnimation("pleaseInsert2");
 
             animateString(matrices, lines[0], a1, null, 1, false, x + 10, yStart + spacing, 0xFFFFFF);
-            animateString(matrices, lines[1], a2, a1, 1, false, xStart + 10, yStart + (spacing * 2), 0xFFFFFF);
+            animateString(matrices, lines[1], a2, a1, 1, false, x + 10, yStart + (spacing * 2), 0xFFFFFF);
 
         } else if(DataModelUtil.getTier(blockEntity.getDataModel()).toString().equalsIgnoreCase("faulty")) {
 
@@ -117,7 +117,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
                 drawTexture(matrices, x + 6,  y + 48 + experienceBarOffset, 18, 141, 7, experienceBarHeight);
             }
 
-            drawStringWithShadow(matrices, renderer, "Tier: " + DataModelUtil.getTier(blockEntity.getDataModel()), x + 10, yStart + spacing, 0xFFFFFF);
+            drawTextWithShadow(matrices, renderer, ((MutableText) Text.of("Tier: ")).append(DataModelUtil.getFormattedTier(blockEntity.getDataModel())), x + 10, yStart + spacing, 0xFFFFFF);
             drawStringWithShadow(matrices, renderer, "Iterations: " + f.format(DataModelUtil.getSimulationCount(blockEntity.getDataModel())), x + 10, yStart + spacing * 2, 0xFFFFFF);
             drawStringWithShadow(matrices, renderer, "Pristine chance: " + dmlSimulacrum.config.Pristine_Chance.entries.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString()) + "%", x + 10, yStart + spacing * 3, 0xFFFFFF);
         }

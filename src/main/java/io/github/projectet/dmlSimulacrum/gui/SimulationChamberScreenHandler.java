@@ -15,6 +15,7 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -31,22 +32,20 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
 
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf packetByteBuf) {
         super(SCS_HANDLER_TYPE, syncId);
+        this.player = playerInventory.player;
+        this.world = this.player.world;
         this.blockPos = packetByteBuf.readBlockPos();
         this.blockEntity = ((SimulationChamberEntity) playerInventory.player.getEntityWorld().getBlockEntity(blockPos));
         this.inventory = blockEntity;
-        this.player = playerInventory.player;
-        this.world = this.player.world;
         this.propertyDelegate = blockEntity.propertyDelegate;
         checkSize(inventory, 4);
+        addProperties(propertyDelegate);
         addSlots();
         addInventorySlots();
-        addProperties(propertyDelegate);
     }
 
     public SimulationChamberScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, SimulationChamberEntity blockEntity) {
         this(syncId, playerInventory, PacketByteBufs.create().writeBlockPos(blockEntity.getPos()));
-        this.inventory = inventory;
-        this.blockEntity = blockEntity;
     }
 
     public int getSyncedEnergy(){
@@ -96,25 +95,34 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack newStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
-            ItemStack originalStack = slot.getStack();
-            newStack = originalStack.copy();
-            if (index < this.inventory.size()) {
-                if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true)) {
+        if(!world.isClient) {
+            Slot slot = this.slots.get(index);
+            if (slot != null && slot.hasStack()) {
+                ItemStack originalStack = slot.getStack();
+                newStack = originalStack.copy();
+                if (index < this.inventory.size()) {
+                    if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false)) {
-                return ItemStack.EMPTY;
-            }
 
-            if (originalStack.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
+                if (originalStack.isEmpty()) {
+                    slot.setStack(ItemStack.EMPTY);
+                } else {
+                    slot.markDirty();
+                }
             }
         }
 
         return newStack;
+    }
+
+    @Override
+    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+        if(!world.isClient) {
+            super.onSlotClick(slotIndex, button, actionType, player);
+        }
     }
 }

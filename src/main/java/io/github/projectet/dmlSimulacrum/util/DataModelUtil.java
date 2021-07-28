@@ -11,6 +11,9 @@ import dev.nathanpb.dml.item.ItemPristineMatter;
 import io.github.projectet.dmlSimulacrum.item.ItemMatter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 
 public class DataModelUtil {
@@ -82,6 +85,29 @@ public class DataModelUtil {
             }
         }
         return 0;
+    }
+
+    public static Text getFormattedTier(ItemStack stack) {
+        switch (getTier(stack).toString()) {
+            case "FAULTY" -> {
+                return new LiteralText("Faulty").formatted(Formatting.GRAY);
+            }
+            case "BASIC" -> {
+                return new LiteralText("Basic").formatted(Formatting.GREEN);
+            }
+            case "ADVANCED" -> {
+                return new LiteralText("Advanced").formatted(Formatting.BLUE);
+            }
+            case "SUPERIOR" -> {
+                return new LiteralText("Superior").formatted(Formatting.LIGHT_PURPLE);
+            }
+            case "SELF_AWARE" -> {
+                return new LiteralText("Self Aware").formatted(Formatting.GOLD);
+            }
+            default -> {
+                return new LiteralText("Invalid Item");
+            }
+        }
     }
 
     public static class DataModel2Matter {
