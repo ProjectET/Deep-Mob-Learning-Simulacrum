@@ -13,7 +13,7 @@
     "sources": "https://github.com/ProjectET/Deep-Mob-Learning-Simulacrum.git"
   },
   "license": "MIT",
-  "icon": "assets/dmlSimulacrum/icon.png",
+  "icon": "assets/dmlsimulacrum/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
