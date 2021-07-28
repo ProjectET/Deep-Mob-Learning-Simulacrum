@@ -31,7 +31,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
 
     public static final Identifier GUI = dmlSimulacrum.id( "textures/gui/simulation_chamber_base.png");
     public static final Identifier defaultGUI = dmlSimulacrum.id("textures/gui/default_gui.png");
-    private static final int WIDTH =  232;
+    private static final int WIDTH = 232;
     private static final int HEIGHT = 230;
     private final double maxEnergy;
     SimulationChamberEntity blockEntity;
@@ -43,14 +43,14 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
 
     public SimulationChamberScreen(SimulationChamberScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.backgroundWidth = WIDTH;
-        this.backgroundHeight = HEIGHT;
-        this.blockEntity = (SimulationChamberEntity) MinecraftClient.getInstance().world.getBlockEntity(handler.blockPos);
-        this.maxEnergy = blockEntity.getEnergyCapacity();
-        this.animationList = new HashMap<>();
-        this.world = blockEntity.getWorld();
-        this.renderer = MinecraftClient.getInstance().textRenderer;
+        blockEntity = (SimulationChamberEntity) MinecraftClient.getInstance().world.getBlockEntity(handler.blockPos);
+        maxEnergy = blockEntity.getEnergyCapacity();
+        animationList = new HashMap<>();
+        world = blockEntity.getWorld();
+        renderer = MinecraftClient.getInstance().textRenderer;
         this.handler = handler;
+        backgroundWidth = WIDTH;
+        backgroundHeight = HEIGHT;
     }
 
     public static int ensureRange(int value, int min, int max) {
@@ -74,7 +74,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexture(matrices, x, y, 0, 0, 216, 141);
 
-        drawTexture(matrices, x - 22, y, 0, 141, 18, 18);
+        drawTexture(matrices, x, y + 145, 0, 141, 18, 18);
 
         //Energy Bar Rendering
         int energyBarHeight = ensureRange((int) ( handler.getSyncedEnergy() / (maxEnergy - 64) * 87), 0, 87);

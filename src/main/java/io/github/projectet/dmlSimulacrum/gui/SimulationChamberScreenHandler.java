@@ -53,17 +53,16 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
         return propertyDelegate.get(0);
     }
 
-
     @Override
     public boolean canUse(PlayerEntity player) {
         return this.inventory.canPlayerUse(player);
     }
 
     private void addSlots() {
-        this.addSlot(new SlotSimulationChamber(inventory, DATA_MODEL_SLOT, -13, 1));
-        this.addSlot(new SlotSimulationChamber(inventory, INPUT_SLOT, 176, 7));
-        this.addSlot(new SlotSimulationChamber(inventory, OUTPUT_SLOT, 196, 7));
-        this.addSlot(new SlotSimulationChamber(inventory, PRISTINE_SLOT, 186, 27));
+        addSlot(new SlotSimulationChamber(inventory, DATA_MODEL_SLOT, 9, 146));
+        addSlot(new SlotSimulationChamber(inventory, INPUT_SLOT, 176, 7));
+        addSlot(new SlotSimulationChamber(inventory, OUTPUT_SLOT, 196, 7));
+        addSlot(new SlotSimulationChamber(inventory, PRISTINE_SLOT, 186, 27));
     }
 
     private void addInventorySlots() {

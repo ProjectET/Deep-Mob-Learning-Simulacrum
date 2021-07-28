@@ -67,14 +67,18 @@ public class DataModelUtil {
         if (stack.getItem() instanceof ItemDataModel) {
             ModConfig config = DeepMobLearningKt.getConfig();
             switch (getTier(stack).toString()) {
-                case "FAULTY":
+                case "FAULTY" -> {
                     return config.getDataModel().getBasicDataRequired();
-                case "BASIC":
+                }
+                case "BASIC" -> {
                     return config.getDataModel().getAdvancedDataRequired();
-                case "ADVANCED":
+                }
+                case "ADVANCED" -> {
                     return config.getDataModel().getSuperiorDataRequired();
-                case "SUPERIOR":
+                }
+                case "SUPERIOR" -> {
                     return config.getDataModel().getSelfAwareDataRequired();
+                }
             }
         }
         return 0;

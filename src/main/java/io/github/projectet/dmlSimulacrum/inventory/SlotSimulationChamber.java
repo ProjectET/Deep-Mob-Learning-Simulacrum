@@ -20,13 +20,10 @@ public class SlotSimulationChamber extends Slot implements Constants {
     @Override
     public boolean canInsert(ItemStack stack) {
         Item item = stack.getItem();
-        switch(index) {
-            case DATA_MODEL_SLOT:
-                return !stack.isEmpty() && item instanceof ItemDataModel && DataModelUtil.getEntityCategory(stack) != null;
-            case INPUT_SLOT:
-                return !stack.isEmpty() && item instanceof ItemPolymerClay;
-            default:
-                return false;
-        }
+        return switch (index) {
+            case DATA_MODEL_SLOT -> !stack.isEmpty() && item instanceof ItemDataModel && DataModelUtil.getEntityCategory(stack) != null;
+            case INPUT_SLOT -> !stack.isEmpty() && item instanceof ItemPolymerClay;
+            default -> false;
+        };
     }
 }
