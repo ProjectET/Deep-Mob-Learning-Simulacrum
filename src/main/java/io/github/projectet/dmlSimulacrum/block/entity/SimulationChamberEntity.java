@@ -141,11 +141,11 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
                 if (blockEntity.percentDone == 0) {
                     Random rand = new Random();
                     int num = rand.nextInt(100);
-                    int chance = dmlSimulacrum.config.Pristine_Chance.entries.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString());
+                    int chance = dmlSimulacrum.pristineChance.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString());
                     blockEntity.byproductSuccess = num <= SimulationChamberScreen.ensureRange(chance, 1, 100);
                 }
 
-                int energyTickCost = dmlSimulacrum.config.Energy_Cost.entries.get(blockEntity.currentDataModelType);
+                int energyTickCost = dmlSimulacrum.energyCost.get(blockEntity.currentDataModelType);
                 blockEntity.energyAmount = blockEntity.energyAmount - (double) energyTickCost;
 
                 if (blockEntity.ticks % ((20 * 15) / 100) == 0) {
@@ -332,7 +332,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     public boolean hasEnergyForSimulation() {
         if(hasDataModel()) {
             int ticksPerSimulation = 300;
-            return getEnergy() > (ticksPerSimulation * dmlSimulacrum.config.Energy_Cost.entries.get(DataModelUtil.getEntityCategory(getDataModel()).toString()));
+            return getEnergy() > (ticksPerSimulation * dmlSimulacrum.energyCost.get(DataModelUtil.getEntityCategory(getDataModel()).toString()));
         } else {
             return false;
         }

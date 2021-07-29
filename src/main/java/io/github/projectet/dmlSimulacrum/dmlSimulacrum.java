@@ -20,6 +20,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 public class dmlSimulacrum implements ModInitializer {
@@ -34,12 +35,17 @@ public class dmlSimulacrum implements ModInitializer {
     }
 
     public static Config config;
+    public static HashMap<String, Integer> pristineChance = new HashMap<>();
+    public static HashMap<String, Integer> energyCost = new HashMap<>();
 
     @Override
     public void onInitialize() {
         AutoConfig.register(Config.class, GsonConfigSerializer::new);
-        testConfig();
-        config = AutoConfig.getConfigHolder(Config.class).getConfig();
+        try {
+            initMaps();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
         Registry.register(Registry.BLOCK, id("simulation_chamber"), SIMULATION_CHAMBER);
         Registry.register(Registry.ITEM, id("simulation_chamber"), new BlockItem(SIMULATION_CHAMBER, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
@@ -49,24 +55,14 @@ public class dmlSimulacrum implements ModInitializer {
         Items.Register();
     }
 
-    public static void testConfig() {
-        Config.PristineChance StaticPristine = new Config.PristineChance();
-        HashMap<String, Integer> map = AutoConfig.getConfigHolder(Config.class).getConfig().Pristine_Chance.entries;
-        map.forEach((K, V) -> {
-            if(!inRange(V, 1, 100)) {
-                map.put(K, StaticPristine.entries.get(K));
-            }
-        });
-        AutoConfig.getConfigHolder(Config.class).getConfig().Pristine_Chance.entries = map;
-
-        Config.PristineChance StaticCost = new Config.PristineChance();
-        HashMap<String, Integer> cost = AutoConfig.getConfigHolder(Config.class).getConfig().Energy_Cost.entries;
-        cost.forEach((K, V) -> {
-            if(!inRange(V, 0, 6666)) {
-                cost.put(K, StaticCost.entries.get(K));
-            }
-        });
-        AutoConfig.getConfigHolder(Config.class).getConfig().Energy_Cost.entries = cost;
+    public void initMaps() throws IllegalAccessException {
+        config = AutoConfig.getConfigHolder(Config.class).getConfig();
+        for (Field x: config.Pristine_Chance.getClass().getFields()) {
+            pristineChance.put(x.getName(), x.getInt(config.Pristine_Chance));
+        }
+        for (Field x: config.Energy_Cost.getClass().getFields()) {
+            energyCost.put(x.getName(), x.getInt(config.Energy_Cost));
+        }
     }
 
     public static boolean inRange(int input, int min, int max) {

@@ -119,7 +119,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
 
             drawTextWithShadow(matrices, renderer, ((MutableText) Text.of("Tier: ")).append(DataModelUtil.getFormattedTier(blockEntity.getDataModel())), x + 10, yStart + spacing, 0xFFFFFF);
             drawStringWithShadow(matrices, renderer, "Iterations: " + f.format(DataModelUtil.getSimulationCount(blockEntity.getDataModel())), x + 10, yStart + spacing * 2, 0xFFFFFF);
-            drawStringWithShadow(matrices, renderer, "Pristine chance: " + dmlSimulacrum.config.Pristine_Chance.entries.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString()) + "%", x + 10, yStart + spacing * 3, 0xFFFFFF);
+            drawStringWithShadow(matrices, renderer, "Pristine chance: " + dmlSimulacrum.pristineChance.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString()) + "%", x + 10, yStart + spacing * 3, 0xFFFFFF);
         }
 
         // Draw player inventory
@@ -161,7 +161,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
                 // Tooltip for energy
                 tooltip.add(new LiteralText(f.format(handler.getSyncedEnergy()) + "/" + f.format(maxEnergy) + " E"));
                 if(blockEntity.hasDataModel()) {
-                    int data = dmlSimulacrum.config.Energy_Cost.entries.get(DataModelUtil.getEntityCategory(blockEntity.getDataModel()).toString());
+                    int data = dmlSimulacrum.energyCost.get(DataModelUtil.getEntityCategory(blockEntity.getDataModel()).toString());
                     tooltip.add(new LiteralText("Simulations with current data model drains " + f.format(data) + "E/t"));
                 }
                 renderTooltip(matrices, tooltip, x - 90, y - 16);
