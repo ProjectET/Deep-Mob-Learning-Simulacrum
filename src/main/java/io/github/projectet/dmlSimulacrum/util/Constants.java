@@ -1,6 +1,7 @@
 package io.github.projectet.dmlSimulacrum.util;
 
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
+import io.github.projectet.dmlSimulacrum.enums.MatterType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -15,14 +16,14 @@ public interface Constants {
     int PRISTINE_SLOT = 3;
 
     HashMap<String, DataModelUtil.DataModel2Matter> dataModel = new HashMap<>(Map.ofEntries(
-            Map.entry("NETHER", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_nether")), Registry.ITEM.get(dmlSimulacrum.id("hellish_matter")))),
-            Map.entry("SLIMY", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_slimy")), Registry.ITEM.get(dmlSimulacrum.id("overworld_matter")))),
-            Map.entry("OVERWORLD", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_overworld")), Registry.ITEM.get(dmlSimulacrum.id("overworld_matter")))),
-            Map.entry("ZOMBIE", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_zombie")), Registry.ITEM.get(dmlSimulacrum.id("overworld_matter")))),
-            Map.entry("SKELETON", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_skeleton")), Registry.ITEM.get(dmlSimulacrum.id("overworld_matter")))),
-            Map.entry("END", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_end")), Registry.ITEM.get(dmlSimulacrum.id("extraterrestrial_matter")))),
-            Map.entry("GHOST", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_ghost")), Registry.ITEM.get(dmlSimulacrum.id("hellish_matter")))),
-            Map.entry("ILLAGER", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_illager")), Registry.ITEM.get(dmlSimulacrum.id("overworld_matter")))),
-            Map.entry("OCEAN", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_ocean")), Registry.ITEM.get(dmlSimulacrum.id("overworld_matter"))))
+            Map.entry("NETHER", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_nether")), MatterType.HELLISH)),
+            Map.entry("SLIMY", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_slimy")), MatterType.OVERWORLD)),
+            Map.entry("OVERWORLD", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_overworld")), MatterType.OVERWORLD)),
+            Map.entry("ZOMBIE", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_zombie")), MatterType.OVERWORLD)),
+            Map.entry("SKELETON", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_skeleton")), MatterType.OVERWORLD)),
+            Map.entry("END", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_end")), MatterType.EXTRATERRESTRIAL)),
+            Map.entry("GHOST", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_ghost")), MatterType.HELLISH)),
+            Map.entry("ILLAGER", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_illager")), MatterType.OVERWORLD)),
+            Map.entry("OCEAN", new DataModelUtil.DataModel2Matter(Registry.ITEM.get(new Identifier("dml-refabricated", "pristine_matter_ocean")), MatterType.OVERWORLD))
     ));
 }

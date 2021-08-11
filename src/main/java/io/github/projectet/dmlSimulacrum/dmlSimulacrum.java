@@ -68,4 +68,8 @@ public class dmlSimulacrum implements ModInitializer {
     public static boolean inRange(int input, int min, int max) {
         return ((input >= min) && (input <= max));
     }
+
+    public static int ensureRange(int value, int min, int max) {
+        return Math.min(Math.max(value, min), max);
+    }
 }

@@ -1,6 +1,5 @@
 package io.github.projectet.dmlSimulacrum.item;
 
-import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -46,8 +45,8 @@ public class ItemMatter extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(Text.of("§7Can be consumed for experience §r(Right click)"));
-        tooltip.add(Text.of("§7Hold §rSHIFT§7 to consume entire stack."));
-        tooltip.add(((MutableText)Text.of("§7Experience per item: ")).append(new LiteralText(String.valueOf(experience)).formatted(Formatting.GREEN)));
+        tooltip.add(new LiteralText("§7Can be consumed for experience §r(Right click)"));
+        tooltip.add(new LiteralText("§7Hold §rSHIFT§7 to consume entire stack."));
+        tooltip.add(new LiteralText("§7Experience per item: ").append(new LiteralText(String.valueOf(experience)).formatted(Formatting.GREEN)));
     }
 }

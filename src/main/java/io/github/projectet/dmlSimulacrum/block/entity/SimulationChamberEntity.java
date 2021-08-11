@@ -75,7 +75,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     }
 
     private static boolean dataModelMatchesOutput(ItemStack stack, ItemStack output) {
-        Item livingMatter = dataModel.get(DataModelUtil.getEntityCategory(stack).toString()).getMatter();
+        Item livingMatter = dataModel.get(DataModelUtil.getEntityCategory(stack).toString()).getType().getItem();
         return Registry.ITEM.getId(livingMatter).equals(Registry.ITEM.getId(output.getItem()));
     }
 
@@ -142,10 +142,10 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
                     Random rand = new Random();
                     int num = rand.nextInt(100);
                     int chance = dmlSimulacrum.pristineChance.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString());
-                    blockEntity.byproductSuccess = num <= SimulationChamberScreen.ensureRange(chance, 1, 100);
+                    blockEntity.byproductSuccess = num <= dmlSimulacrum.ensureRange(chance, 1, 100);
                 }
 
-                int energyTickCost = dmlSimulacrum.energyCost.get(blockEntity.currentDataModelType);
+                int energyTickCost = DataModelUtil.getEnergyCost(blockEntity.getDataModel());
                 blockEntity.energyAmount = blockEntity.energyAmount - (double) energyTickCost;
 
                 if (blockEntity.ticks % ((20 * 15) / 100) == 0) {
@@ -308,7 +308,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
             DataModelUtil.updateTierCount(getDataModel());
 
             if(inventory.get(2).getItem() instanceof ItemMatter) inventory.get(2).setCount(getLiving().getCount() + 1);
-            else inventory.set(2, new ItemStack(dataModel.get(currentDataModelType).getMatter(), 1));
+            else inventory.set(2, new ItemStack(dataModel.get(currentDataModelType).getType().getItem(), 1));
 
             if(byproductSuccess) {
                 // If Byproduct roll was successful
@@ -332,7 +332,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     public boolean hasEnergyForSimulation() {
         if(hasDataModel()) {
             int ticksPerSimulation = 300;
-            return getEnergy() > (ticksPerSimulation * dmlSimulacrum.energyCost.get(DataModelUtil.getEntityCategory(getDataModel()).toString()));
+            return getEnergy() > (ticksPerSimulation * DataModelUtil.getEnergyCost(getDataModel()));
         } else {
             return false;
         }

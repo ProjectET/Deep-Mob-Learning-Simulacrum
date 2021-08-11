@@ -8,7 +8,8 @@ import dev.nathanpb.dml.item.ItemDataModel;
 import dev.nathanpb.dml.ModConfig;
 
 import dev.nathanpb.dml.item.ItemPristineMatter;
-import io.github.projectet.dmlSimulacrum.item.ItemMatter;
+import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
+import io.github.projectet.dmlSimulacrum.enums.MatterType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
@@ -57,6 +58,27 @@ public class DataModelUtil {
         }
     }
 
+    public static int getEnergyCost(ItemStack stack) {
+        return getEntityCategory(stack) == null ? 0 : dmlSimulacrum.energyCost.get(getEntityCategory(stack).toString());
+    }
+
+    public static Text textType(ItemStack stack) {
+        switch(Constants.dataModel.get(getEntityCategory(stack).toString()).getType()) {
+            case OVERWORLD -> {
+                return new LiteralText("Overworld").formatted(Formatting.GREEN);
+            }
+            case HELLISH -> {
+                return new LiteralText("Hellish").formatted(Formatting.RED);
+            }
+            case EXTRATERRESTRIAL -> {
+                return new LiteralText("Extraterrestrial").formatted(Formatting.LIGHT_PURPLE);
+            }
+            default -> {
+                return new LiteralText("Invalid Item");
+            }
+        }
+    }
+
     public static DataModelTier getTier(ItemStack stack) {
         if(stack.getItem() instanceof ItemDataModel) {
             return DataModelDataKt.getDataModel(stack).tier();
@@ -69,17 +91,17 @@ public class DataModelUtil {
     public static int getTierRoof(ItemStack stack) {
         if (stack.getItem() instanceof ItemDataModel) {
             ModConfig config = DeepMobLearningKt.getConfig();
-            switch (getTier(stack).toString()) {
-                case "FAULTY" -> {
+            switch (getTier(stack)) {
+                case FAULTY -> {
                     return config.getDataModel().getBasicDataRequired();
                 }
-                case "BASIC" -> {
+                case BASIC -> {
                     return config.getDataModel().getAdvancedDataRequired();
                 }
-                case "ADVANCED" -> {
+                case ADVANCED -> {
                     return config.getDataModel().getSuperiorDataRequired();
                 }
-                case "SUPERIOR" -> {
+                case SUPERIOR -> {
                     return config.getDataModel().getSelfAwareDataRequired();
                 }
             }
@@ -87,21 +109,21 @@ public class DataModelUtil {
         return 0;
     }
 
-    public static Text getFormattedTier(ItemStack stack) {
-        switch (getTier(stack).toString()) {
-            case "FAULTY" -> {
+    public static Text textTier(ItemStack stack) {
+        switch (getTier(stack)) {
+            case FAULTY -> {
                 return new LiteralText("Faulty").formatted(Formatting.GRAY);
             }
-            case "BASIC" -> {
+            case BASIC -> {
                 return new LiteralText("Basic").formatted(Formatting.GREEN);
             }
-            case "ADVANCED" -> {
+            case ADVANCED -> {
                 return new LiteralText("Advanced").formatted(Formatting.BLUE);
             }
-            case "SUPERIOR" -> {
+            case SUPERIOR -> {
                 return new LiteralText("Superior").formatted(Formatting.LIGHT_PURPLE);
             }
-            case "SELF_AWARE" -> {
+            case SELF_AWARE -> {
                 return new LiteralText("Self Aware").formatted(Formatting.GOLD);
             }
             default -> {
@@ -111,16 +133,16 @@ public class DataModelUtil {
     }
 
     public static class DataModel2Matter {
-        ItemPristineMatter pristine;
-        ItemMatter matter;
+        private final ItemPristineMatter pristine;
+        private final MatterType type;
 
-        DataModel2Matter(Item pristine, Item matter) {
+        DataModel2Matter(Item pristine, MatterType matter) {
             this.pristine = (ItemPristineMatter) pristine;
-            this.matter = (ItemMatter) matter;
+            this.type = matter;
         }
 
-        public ItemMatter getMatter() {
-            return matter;
+        public MatterType getType() {
+            return type;
         }
 
         public ItemPristineMatter getPristine() {

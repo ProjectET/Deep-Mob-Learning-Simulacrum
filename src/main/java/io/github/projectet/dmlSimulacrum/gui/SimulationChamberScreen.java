@@ -54,10 +54,6 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         backgroundHeight = HEIGHT;
     }
 
-    public static int ensureRange(int value, int min, int max) {
-        return Math.min(Math.max(value, min), max);
-    }
-
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         DecimalFormat f = new DecimalFormat("0.#");
@@ -77,7 +73,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
         drawTexture(matrices, x, y + 145, 0, 141, 18, 18);
 
         //Energy Bar Rendering
-        int energyBarHeight = ensureRange((int) ( handler.getSyncedEnergy() / (maxEnergy - 64) * 87), 0, 87);
+        int energyBarHeight = dmlSimulacrum.ensureRange((int) ( handler.getSyncedEnergy() / (maxEnergy - 64) * 87), 0, 87);
         int energyBarOffset = 87 - energyBarHeight;
         drawTexture(matrices, x + 203,  y + 48 + energyBarOffset, 25, 141, 7, energyBarHeight);
 
@@ -92,7 +88,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
             animateString(matrices, lines[0], a1, null, 1, false, x + 10, yStart + spacing, 0xFFFFFF);
             animateString(matrices, lines[1], a2, a1, 1, false, x + 10, yStart + (spacing * 2), 0xFFFFFF);
 
-        } else if(DataModelUtil.getTier(blockEntity.getDataModel()).toString().equalsIgnoreCase("faulty")) {
+        } else if(DataModelUtil.getTier(blockEntity.getDataModel()).equals(DataModelTier.FAULTY)) {
 
             lines = new String[] {"Insufficient data in model", "please insert a basic model", "or better "};
 
@@ -106,7 +102,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
 
         } else {
             // Draw current data model data
-            if(DataModelUtil.getTier(blockEntity.getDataModel()).toString().equals(DataModelTier.SELF_AWARE.toString())) {
+            if(DataModelUtil.getTier(blockEntity.getDataModel()).equals(DataModelTier.SELF_AWARE)) {
                 drawTexture(matrices, x + 6,  y + 48, 18, 141, 7, 87);
             } else {
                 int collectedData = DataModelUtil.getTierCount(blockEntity.getDataModel()) - DataModelUtil.getTier(blockEntity.getDataModel()).getDataAmount();
@@ -117,7 +113,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
                 drawTexture(matrices, x + 6,  y + 48 + experienceBarOffset, 18, 141, 7, experienceBarHeight);
             }
 
-            drawTextWithShadow(matrices, renderer, ((MutableText) Text.of("Tier: ")).append(DataModelUtil.getFormattedTier(blockEntity.getDataModel())), x + 10, yStart + spacing, 0xFFFFFF);
+            drawTextWithShadow(matrices, renderer, new LiteralText("Tier: ").append(DataModelUtil.textTier(blockEntity.getDataModel())), x + 10, yStart + spacing, 0xFFFFFF);
             drawStringWithShadow(matrices, renderer, "Iterations: " + f.format(DataModelUtil.getSimulationCount(blockEntity.getDataModel())), x + 10, yStart + spacing * 2, 0xFFFFFF);
             drawStringWithShadow(matrices, renderer, "Pristine chance: " + dmlSimulacrum.pristineChance.get(DataModelUtil.getTier(blockEntity.getDataModel()).toString()) + "%", x + 10, yStart + spacing * 3, 0xFFFFFF);
         }
@@ -146,7 +142,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
             if(13 <= x && x < 22) {
                 // Tooltip for data model data bar
                 if(blockEntity.hasDataModel()) {
-                    if(!DataModelUtil.getTier(blockEntity.getDataModel()).toString().equals(DataModelTier.SELF_AWARE.name())) {
+                    if(!DataModelUtil.getTier(blockEntity.getDataModel()).equals(DataModelTier.SELF_AWARE)) {
                         int currentTierCount = DataModelUtil.getTierCount(blockEntity.getDataModel()) - DataModelUtil.getTier(blockEntity.getDataModel()).getDataAmount();
                         int currentTierRoof = DataModelUtil.getTierRoof(blockEntity.getDataModel()) - DataModelUtil.getTier(blockEntity.getDataModel()).getDataAmount();
                         tooltip.add(new LiteralText(currentTierCount + "/" + currentTierRoof + " Data collected"));
@@ -161,7 +157,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
                 // Tooltip for energy
                 tooltip.add(new LiteralText(f.format(handler.getSyncedEnergy()) + "/" + f.format(maxEnergy) + " E"));
                 if(blockEntity.hasDataModel()) {
-                    int data = dmlSimulacrum.energyCost.get(DataModelUtil.getEntityCategory(blockEntity.getDataModel()).toString());
+                    int data = DataModelUtil.getEnergyCost(blockEntity.getDataModel());
                     tooltip.add(new LiteralText("Simulations with current data model drains " + f.format(data) + "E/t"));
                 }
                 renderTooltip(matrices, tooltip, x - 90, y - 16);
@@ -177,12 +173,10 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
     }
 
     private Animation getAnimation(String key) {
-        if(animationList.containsKey(key)) {
-            return animationList.get(key);
-        } else {
+        if (!animationList.containsKey(key)) {
             animationList.put(key, new Animation());
-            return animationList.get(key);
         }
+        return animationList.get(key);
     }
 
     private void animateString(MatrixStack matrices, String string, Animation anim, Animation precedingAnim, int delay, boolean loop, int x, int y, int color) {
@@ -201,7 +195,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
     private void drawConsoleText(MatrixStack matrices, int x, int y, int spacing) {
         String[] lines;
 
-        if(!blockEntity.hasDataModel() || DataModelUtil.getTier(blockEntity.getDataModel()).toString().equalsIgnoreCase("faulty")) {
+        if(!blockEntity.hasDataModel() || DataModelUtil.getTier(blockEntity.getDataModel()).equals(DataModelTier.FAULTY)) {
             animateString(matrices,"_", getAnimation("blinkingUnderline"), null, 16, true, x + 21, y + 49, 0xFFFFFF);
 
         } else if(!blockEntity.hasPolymerClay() && !blockEntity.isCrafting()) {

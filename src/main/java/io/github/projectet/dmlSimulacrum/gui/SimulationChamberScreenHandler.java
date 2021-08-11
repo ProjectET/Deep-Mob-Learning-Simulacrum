@@ -39,7 +39,7 @@ public class SimulationChamberScreenHandler extends ScreenHandler implements Con
         this.inventory = blockEntity;
         this.propertyDelegate = blockEntity.propertyDelegate;
         checkSize(inventory, 4);
-        addProperties(propertyDelegate);
+        if(world.isClient) addProperties(propertyDelegate);
         addSlots();
         addInventorySlots();
     }
