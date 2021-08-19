@@ -21,7 +21,7 @@ dependencies {
     modApi ("dev.technici4n:FastTransferLib:${project.ftl_version}")
     include ("dev.technici4n:FastTransferLib:${project.ftl_version}")
 
-    modApi "com.github.NathanPB:KtDataTagLib:${project.ktdatataglib_version}"
+    modApi "dev.nathanpb:KtDataTagLib:${project.ktdatataglib_version}"
 
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude group: "net.fabricmc.fabric-api", module: "fabric-api"
@@ -34,7 +34,7 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
-    modApi("com.github.ProjectET:DeepMobLearning-Refabricated:${project.dmlr_version}")
+    modApi("dev.nathanpb:DeepMobLearning-Refabricated:${project.dmlr_version}:base")
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
 }
@@ -66,6 +66,9 @@ repositories {
         content {
             includeGroup "com.terraformersmc"
         }
+    }
+    maven { url = "https://maven.cafeteria.dev/"
+        artifactUrls("https://maven.cafeteria.dev/releases/dev/nathanpb/")
     }
 }
 
