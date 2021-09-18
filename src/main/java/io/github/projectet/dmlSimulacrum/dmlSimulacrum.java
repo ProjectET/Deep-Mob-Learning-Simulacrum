@@ -1,6 +1,5 @@
 package io.github.projectet.dmlSimulacrum;
 
-import dev.technici4n.fasttransferlib.api.energy.EnergyApi;
 import io.github.projectet.dmlSimulacrum.block.SimulationChamber;
 import io.github.projectet.dmlSimulacrum.block.entity.SimulationChamberEntity;
 import io.github.projectet.dmlSimulacrum.config.Config;
@@ -19,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import team.reborn.energy.api.EnergyStorage;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class dmlSimulacrum implements ModInitializer {
         Registry.register(Registry.ITEM, id("simulation_chamber"), new BlockItem(SIMULATION_CHAMBER, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
 
         SIMULATION_CHAMBER_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, id("simulation_chamber_entity"), FabricBlockEntityTypeBuilder.create(SimulationChamberEntity::new, SIMULATION_CHAMBER).build());
-        EnergyApi.SIDED.registerSelf(SIMULATION_CHAMBER_ENTITY);
+        EnergyStorage.SIDED.registerSelf(SIMULATION_CHAMBER_ENTITY);
         Items.Register();
     }
 

@@ -2,10 +2,7 @@ package io.github.projectet.dmlSimulacrum.block.entity;
 
 import dev.nathanpb.dml.item.ItemDataModel;
 import dev.nathanpb.dml.item.ItemPristineMatter;
-import dev.technici4n.fasttransferlib.api.Simulation;
-import dev.technici4n.fasttransferlib.api.energy.EnergyIo;
 import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
-import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreen;
 import io.github.projectet.dmlSimulacrum.gui.SimulationChamberScreenHandler;
 import io.github.projectet.dmlSimulacrum.inventory.ImplementedInventory;
 import io.github.projectet.dmlSimulacrum.item.ItemMatter;
@@ -15,6 +12,8 @@ import io.github.projectet.dmlSimulacrum.util.Constants;
 import io.github.projectet.dmlSimulacrum.util.DataModelUtil;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,16 +35,17 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import team.reborn.energy.api.EnergyStorage;
 
 import java.util.HashMap;
 import java.util.Random;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyIo, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
+public class SimulationChamberEntity extends BlockEntity implements EnergyStorage, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
 
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
     public int ticks = 0;
     public int percentDone = 0;
-    private Double energyAmount = 0.0;
+    private long energyAmount = 0;
     private boolean isCrafting = false;
     private boolean byproductSuccess = false;
     private String currentDataModelType = "";
@@ -56,12 +56,12 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     public PropertyDelegate propertyDelegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
-            return energyAmount.intValue();
+            return (int) energyAmount;
         }
 
         @Override
         public void set(int index, int value) {
-            energyAmount = (double) value;
+            energyAmount = value;
         }
 
         @Override
@@ -85,42 +85,44 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     }
 
     @Override
-    public double getEnergy() {
-        if (energyAmount != null) return energyAmount;
-        else return 0.0;
-    }
-
-    @Override
-    public double getEnergyCapacity() {
-        return 2000000.0;
-    }
-
-    @Override
     public boolean supportsInsertion() {
         return true;
     }
 
     @Override
-    public double insert(double amount, Simulation simulation) {
-        double inserted = energyAmount + amount;
-        if(inserted > getEnergyCapacity()) {
-            if (!simulation.isSimulating()) {
-                energyAmount = getEnergyCapacity();
-            }
-            return inserted - getEnergyCapacity();
-        }
-        else {
-            if (!simulation.isSimulating()) {
-                energyAmount += amount;
-            }
-            return 0.0;
+    public long insert(long maxAmount, TransactionContext transaction) {
+        StoragePreconditions.notNegative(maxAmount);
+
+        long maxInsert = 25600;
+        long inserted = Math.min(maxInsert, Math.min(maxAmount, getCapacity() - energyAmount));
+
+        if (inserted > 0) {
+            markDirty();
+            energyAmount += inserted;
+            return inserted;
         }
 
+        return 0;
     }
 
     @Override
     public boolean supportsExtraction() {
         return false;
+    }
+
+    @Override
+    public long extract(long maxAmount, TransactionContext transaction) {
+        return 0;
+    }
+
+    @Override
+    public long getAmount() {
+        return energyAmount;
+    }
+
+    @Override
+    public long getCapacity() {
+        return 2000000;
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, SimulationChamberEntity blockEntity) {
@@ -146,7 +148,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
                 }
 
                 int energyTickCost = DataModelUtil.getEnergyCost(blockEntity.getDataModel());
-                blockEntity.energyAmount = blockEntity.energyAmount - (double) energyTickCost;
+                blockEntity.energyAmount = blockEntity.energyAmount - energyTickCost;
 
                 if (blockEntity.ticks % ((20 * 15) / 100) == 0) {
                     blockEntity.percentDone++;
@@ -193,7 +195,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     @Override
     public void readNbt(NbtCompound compound) {
         super.readNbt(compound);
-        energyAmount = compound.getDouble("energy");
+        energyAmount = compound.getLong("energy");
         byproductSuccess = compound.getBoolean("byproductSuccess");
         isCrafting = compound.getBoolean("isCrafting");
         percentDone = compound.getInt("percentDone");
@@ -205,7 +207,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     @Override
     public NbtCompound writeNbt(NbtCompound compound) {
         super.writeNbt(compound);
-        compound.putDouble("energy", energyAmount);
+        compound.putLong("energy", energyAmount);
         compound.putBoolean("byproductSuccess", byproductSuccess);
         compound.putBoolean("isCrafting", isCrafting);
         compound.putInt("percentDone", percentDone);
@@ -274,21 +276,17 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     }
 
     private Animation getAnimation(String key) {
-        if(simulationAnimations.containsKey(key)) {
-            return simulationAnimations.get(key);
-        } else {
+        if (!simulationAnimations.containsKey(key)) {
             simulationAnimations.put(key, new Animation());
-            return simulationAnimations.get(key);
         }
+        return simulationAnimations.get(key);
     }
 
     public String getSimulationText(String key) {
-        if(simulationText.containsKey(key)) {
-            return simulationText.get(key);
-        } else {
+        if (!simulationText.containsKey(key)) {
             simulationText.put(key, "");
-            return simulationText.get(key);
         }
+        return simulationText.get(key);
     }
 
     private void startSimulation() {
@@ -332,7 +330,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     public boolean hasEnergyForSimulation() {
         if(hasDataModel()) {
             int ticksPerSimulation = 300;
-            return getEnergy() > (ticksPerSimulation * DataModelUtil.getEnergyCost(getDataModel()));
+            return getAmount() > ((long) ticksPerSimulation * DataModelUtil.getEnergyCost(getDataModel()));
         } else {
             return false;
         }
@@ -425,25 +423,20 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
 
     @Override
     public int[] getAvailableSlots(Direction side) {
-        switch(side) {
-            case UP:
-                return new int[] {DATA_MODEL_SLOT, INPUT_SLOT};
-            default:
-                return new int[] {OUTPUT_SLOT, PRISTINE_SLOT};
+        if (side == Direction.UP) {
+            return new int[]{DATA_MODEL_SLOT, INPUT_SLOT};
         }
+        return new int[]{OUTPUT_SLOT, PRISTINE_SLOT};
     }
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
         if (dir == Direction.UP) {
-            switch (slot) {
-                case DATA_MODEL_SLOT:
-                    return stack.getItem() instanceof ItemDataModel && DataModelUtil.getEntityCategory(stack) != null;
-                case INPUT_SLOT:
-                    return stack.getItem() instanceof ItemPolymerClay;
-                default:
-                    return false;
-            }
+            return switch (slot) {
+                case DATA_MODEL_SLOT -> stack.getItem() instanceof ItemDataModel && DataModelUtil.getEntityCategory(stack) != null;
+                case INPUT_SLOT -> stack.getItem() instanceof ItemPolymerClay;
+                default -> false;
+            };
         }
         else return false;
     }
@@ -451,13 +444,10 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyIo, Im
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
         if(dir != Direction.UP) {
-            switch (slot) {
-                case OUTPUT_SLOT:
-                case PRISTINE_SLOT:
-                    return true;
-                default:
-                    return false;
-            }
+            return switch (slot) {
+                case OUTPUT_SLOT, PRISTINE_SLOT -> true;
+                default -> false;
+            };
         }
         else return false;
     }

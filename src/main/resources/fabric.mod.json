@@ -31,7 +31,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.11.3",
-    "fabric": "*",
+    "fabric": ">=0.40.1",
     "minecraft": "1.17.*",
     "dml-refabricated": "*",
     "cloth-config2": ">=5.0.30"

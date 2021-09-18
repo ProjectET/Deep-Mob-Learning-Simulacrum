@@ -1,6 +1,5 @@
 package io.github.projectet.dmlSimulacrum.util;
 
-import io.github.projectet.dmlSimulacrum.dmlSimulacrum;
 import io.github.projectet.dmlSimulacrum.enums.MatterType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;

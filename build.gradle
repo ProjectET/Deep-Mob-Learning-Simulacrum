@@ -18,14 +18,12 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modApi ("dev.technici4n:FastTransferLib:${project.ftl_version}")
-    include ("dev.technici4n:FastTransferLib:${project.ftl_version}")
-
     modApi "dev.nathanpb:KtDataTagLib:${project.ktdatataglib_version}"
 
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude group: "net.fabricmc.fabric-api", module: "fabric-api"
     }
+    include modApi("teamreborn:energy:${project.energy_version}")
 
     modApi("dev.architectury:architectury-fabric:${project.architectury_version}")
     modApi("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
