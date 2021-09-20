@@ -45,7 +45,7 @@ public class SimulationChamberScreen extends HandledScreen<SimulationChamberScre
     public SimulationChamberScreen(SimulationChamberScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         blockEntity = (SimulationChamberEntity) MinecraftClient.getInstance().world.getBlockEntity(handler.blockPos);
-        maxEnergy = blockEntity.getCapacity();
+        maxEnergy = blockEntity.energyStorage.getCapacity();
         animationList = new HashMap<>();
         world = blockEntity.getWorld();
         renderer = MinecraftClient.getInstance().textRenderer;

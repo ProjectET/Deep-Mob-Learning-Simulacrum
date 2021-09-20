@@ -51,7 +51,7 @@ public class dmlSimulacrum implements ModInitializer {
         Registry.register(Registry.ITEM, id("simulation_chamber"), new BlockItem(SIMULATION_CHAMBER, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
 
         SIMULATION_CHAMBER_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, id("simulation_chamber_entity"), FabricBlockEntityTypeBuilder.create(SimulationChamberEntity::new, SIMULATION_CHAMBER).build());
-        EnergyStorage.SIDED.registerSelf(SIMULATION_CHAMBER_ENTITY);
+        EnergyStorage.SIDED.registerForBlockEntity(((blockEntity, direction) -> blockEntity.energyStorage), SIMULATION_CHAMBER_ENTITY);
         Items.Register();
     }
 

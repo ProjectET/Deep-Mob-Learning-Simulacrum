@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -36,19 +37,20 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import team.reborn.energy.api.EnergyStorage;
+import team.reborn.energy.api.base.SimpleEnergyStorage;
 
 import java.util.HashMap;
 import java.util.Random;
 
-public class SimulationChamberEntity extends BlockEntity implements EnergyStorage, ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
+public class SimulationChamberEntity extends BlockEntity implements ImplementedInventory, ExtendedScreenHandlerFactory, BlockEntityClientSerializable, Constants, SidedInventory {
 
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(4, ItemStack.EMPTY);
     public int ticks = 0;
     public int percentDone = 0;
-    private long energyAmount = 0;
     private boolean isCrafting = false;
     private boolean byproductSuccess = false;
     private String currentDataModelType = "";
+    public SimpleEnergyStorage energyStorage = new SimpleEnergyStorage(2000000, 25600, 0);
 
     private HashMap<String, String> simulationText = new HashMap<>();
     private HashMap<String, Animation> simulationAnimations = new HashMap<>();
@@ -56,12 +58,12 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyStorag
     public PropertyDelegate propertyDelegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
-            return (int) energyAmount;
+            return (int) energyStorage.getAmount();
         }
 
         @Override
         public void set(int index, int value) {
-            energyAmount = value;
+            energyStorage.amount = value;
         }
 
         @Override
@@ -82,47 +84,6 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyStorag
     private static boolean dataModelMatchesPristine(ItemStack stack, ItemStack pristine) {
         Item pristineMatter = dataModel.get(DataModelUtil.getEntityCategory(stack).toString()).getPristine();
         return Registry.ITEM.getId(pristineMatter).equals(Registry.ITEM.getId(pristine.getItem()));
-    }
-
-    @Override
-    public boolean supportsInsertion() {
-        return true;
-    }
-
-    @Override
-    public long insert(long maxAmount, TransactionContext transaction) {
-        StoragePreconditions.notNegative(maxAmount);
-
-        long maxInsert = 25600;
-        long inserted = Math.min(maxInsert, Math.min(maxAmount, getCapacity() - energyAmount));
-
-        if (inserted > 0) {
-            markDirty();
-            energyAmount += inserted;
-            return inserted;
-        }
-
-        return 0;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return false;
-    }
-
-    @Override
-    public long extract(long maxAmount, TransactionContext transaction) {
-        return 0;
-    }
-
-    @Override
-    public long getAmount() {
-        return energyAmount;
-    }
-
-    @Override
-    public long getCapacity() {
-        return 2000000;
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, SimulationChamberEntity blockEntity) {
@@ -148,7 +109,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyStorag
                 }
 
                 int energyTickCost = DataModelUtil.getEnergyCost(blockEntity.getDataModel());
-                blockEntity.energyAmount = blockEntity.energyAmount - energyTickCost;
+                blockEntity.energyStorage.amount = blockEntity.energyStorage.amount - energyTickCost;
 
                 if (blockEntity.ticks % ((20 * 15) / 100) == 0) {
                     blockEntity.percentDone++;
@@ -195,7 +156,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyStorag
     @Override
     public void readNbt(NbtCompound compound) {
         super.readNbt(compound);
-        energyAmount = compound.getLong("energy");
+        energyStorage.amount = compound.getLong("energy");
         byproductSuccess = compound.getBoolean("byproductSuccess");
         isCrafting = compound.getBoolean("isCrafting");
         percentDone = compound.getInt("percentDone");
@@ -207,7 +168,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyStorag
     @Override
     public NbtCompound writeNbt(NbtCompound compound) {
         super.writeNbt(compound);
-        compound.putLong("energy", energyAmount);
+        compound.putLong("energy", energyStorage.amount);
         compound.putBoolean("byproductSuccess", byproductSuccess);
         compound.putBoolean("isCrafting", isCrafting);
         compound.putInt("percentDone", percentDone);
@@ -330,7 +291,7 @@ public class SimulationChamberEntity extends BlockEntity implements EnergyStorag
     public boolean hasEnergyForSimulation() {
         if(hasDataModel()) {
             int ticksPerSimulation = 300;
-            return getAmount() > ((long) ticksPerSimulation * DataModelUtil.getEnergyCost(getDataModel()));
+            return energyStorage.amount > ((long) ticksPerSimulation * DataModelUtil.getEnergyCost(getDataModel()));
         } else {
             return false;
         }
